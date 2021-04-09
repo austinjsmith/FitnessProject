@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/caloriecount.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <title>Calorie Calculator</title>
+</head>
+<body>
+    
+    <div>
+        <h1>Fitness Tracker</h1>
+    </div>
+    <div class="topbar">
+        <a href="#home">Home</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "home">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="#Login">Log In</a>
+    </div>
+        <div>
+            <h3>Meal Calories</h3>
+           
+            <p id="meal-description">
+                Insert your calculated calories for your meal! <br>
+                Be sure to read your nutrition labels for calories and macros.
+            </p>
+        </div>
+
+            <form id="mealForm" action="/calories" method="POST">
+                <div>
+                    <label for="mealname">Meal Name:</label>
+                    <br>
+                    <input id="mealname" name ="mealname"> 
+                </div>
+                <div>
+                    <label for="maincalorie">Calories:</label>
+                    <br>
+                    <input id="mealcalorie" name="maincalorie">
+                </div>
+                <h3>Macros</h3>
+              
+                <div>
+                    <label for="proteins">Protein (enter in grams): </label>
+                    <br>
+                    <input id="proteins" name="proteins">
+                </div>
+                <div>
+                    <label for="carbs">Carbs (enter in grams): </label>
+                    <br>
+                    <input id="carbs" name="carbs">
+                </div>
+                <div>
+                    <label for="fats">Fats (enter in grams): </label>
+                    <br>
+                    <input id="fats" name="fats">
+                </div>
+                <br>
+                <button id="add-meal"> Add Meal </button>
+            </form>
+
+</body>
+</html>

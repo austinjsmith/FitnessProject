@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/tdee.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDEE Calculator</title>
+</head>
+<body>
+    <h1>Fitness Tracker</h1>
+    <div class="topbar">
+        <a href="#home">Home</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "home">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="#Login">Log In</a>
+    </div>
+    <form id="tdeeForm" action="/counter" method="POST">
+        <div>
+            <label for="weight">Enter your weight:</label>
+            <input id="weight" name="weight">
+        </div>
+        <div>
+            <label for="gender">Enter your gender:</label>
+            <input id="gender" name="gender" type="text">
+        </div>
+        <div>
+            <label for="lean">Enter your body fat:</label>
+            <input id="lean" name="lean">
+        </div>
+        <div>
+            <label for="activity">Enter your activity:</label>
+            <input id="activity" name="activity">
+        </div>
+        <br>
+        <button id="add-tdee">Submit</button>
+
+    </form>
+</body>
+</html>

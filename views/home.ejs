@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/home.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+</head>
+<body>
+    <h1>Fitness Tracker</h1>
+    <div class="topbar">
+        <a href="#home">Home</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "home">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="#Login">Log In</a>
+    </div>
+    <table border = "1">
+        <tr>
+            <th>Meal Name</th>
+            <th>Meal Calories</th>
+            <th>Fats</th>
+            <th>Proteins</th>
+            <th>Carbs</th>
+        </tr>
+        <tbody>
+            <% for (const meal of meals){ %>   
+                <tr>
+                    <td><%= meal.mealname %></td>
+                    <td><%= meal.maincalorie %></td>
+                    <td><%= meal.fats %></td>
+                    <td><%= meal.carbs %></td>
+                    <td><%= meal.proteins %></td>
+                    <br>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "calcountweb",
+  "version": "1.0.0",
+  "description": "web application that will track and determine calories. Updated on goals will be posted to dashboard for everyone to see",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "npm run init-db & nodemon index.js",
+    "init-db": "sqlite3 ./Database/trackCalorie.db <./Database/mySQL.sql"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "argon2": "^0.27.2",
+    "better-sqlite3": "^7.1.4",
+    "connect-redis": "^5.1.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "joi": "^17.4.0",
+    "uuid": "^8.3.2"
+  }
+}
