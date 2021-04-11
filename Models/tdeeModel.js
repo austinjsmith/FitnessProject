@@ -12,10 +12,10 @@ class tdeeModel{
     createTDEE(comp){
         try {
             const sql=
-                `INSERT INTO composition 
-                    (weight, gender, lean, activity, user)
+                `INSERT INTO Composition 
+                    (weight, gender, lean, activity, userid, tdee)
                 VALUES 
-                    (@weight, @gender, @lean, @activity, @user)
+                    (@weight, @gender, @lean, @activity, @userid, @tdee)
                 `;
             
             db.prepare(sql).run(comp);
@@ -26,39 +26,20 @@ class tdeeModel{
         }
     }
 
-    updateTdee(tdee, user){
-        const sql=`UPDATE composition SET tdee=@tdee WHERE user=@user`
-        db.prepare(sql).run({user: user, tdee: tdee});
+    updateTDEE (tdee, userid){
+        const sql = `
+            UPDATE Composition
+            SET tdee = @tdee
+            WHERE userid=@userid
+            `;
+        db.prepare(sql).run({tdee, userid});
     }
 
-    updateWeight(weight, user){
-        const sql=`UPDATE composition SET weight=@weight WHERE user=@user`
-        db.prepare(sql).run({user: user, weight: weight});
-    }
+    getTDEE (userid){
+        const sql = `
+        SELECT tdee FROM composition WHERE userid=@userid`;
+        return db.prepare(sql).get({userid}); 
 
-    getWeight (userID){
-        const sql=`
-        SELECT weight FROM composition WHERE user=@userID`;
-
-        return db.prepare(sql).get({userID}); 
-    }
-    getActivity (userID){
-        const sql=`
-        SELECT activity FROM composition WHERE user=@userID`;
-
-        return db.prepare(sql).get({userID}); 
-    }
-    getLean (userID){
-        const sql=`
-        SELECT lean FROM composition WHERE user=@userID`;
-
-        return db.prepare(sql).get({userID}); 
-    }
-    getGender (userID){
-        const sql=`
-        SELECT gender FROM composition WHERE user=@userID`;
-
-        return db.prepare(sql).get({userID}); 
     }
 }
 

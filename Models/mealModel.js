@@ -12,9 +12,9 @@ class mealModel{
         try {
             const sql =` 
             INSERT INTO Meals 
-                (mealname, maincalorie, fats, carbs, proteins)
+                (mealname, maincalorie, fats, carbs, proteins, userid)
             VALUES 
-                (@mealname, @maincalorie, @fats, @carbs, @proteins)
+                (@mealname, @maincalorie, @fats, @carbs, @proteins, @userid)
             `;
             db.prepare(sql).run(meal);
             return true;
@@ -25,10 +25,13 @@ class mealModel{
         }
     }
 
-    getAllMeals () {
+    getAllMeals (userid) {
         try {
-            const sql = `SELECT * FROM Meals`;
-            return db.prepare(sql).all();
+            const sql = `
+            SELECT * FROM Meals 
+            WHERE userid = @userid 
+            ORDER BY rowid DESC`;
+            return db.prepare(sql).all({userid});
         } catch (err){
             return [];
         }

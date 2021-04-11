@@ -6,3 +6,12 @@ create table if not exists Meals (
     proteins INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS composition (
+	weight	REAL,
+	gender	TEXT,
+	lean	REAL,
+	activity	REAL,
+	tdee	INTEGER DEFAULT 2000,
+	goal	TEXT,
+	userid	TEXT
+);

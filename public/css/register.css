@@ -1,0 +1,80 @@
+html {
+    font-family: "Arial", sans-serif;
+    font-size: 30px;
+    color: white;
+}
+
+.topbar{
+    background-color: #333;
+    overflow: hidden;
+}
+
+.topbar a{
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.topbar a:hover{
+    background-color: #cf5f5f;
+}
+
+body{
+    margin: 0 auto;
+    padding:  0 0px 0px 0px;
+}
+
+.content{
+    overflow: auto;
+    position: relative;
+}
+
+.content::before{
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+  
+    display: block;
+    background-image: url('https://static.independent.co.uk/s3fs-public/thumbnails/image/2018/05/14/09/weight-training-mental-health.jpg?width=990&auto=webp&quality=75');
+    background-size:cover;
+    
+    width: 100%;
+    height: 100%;
+  
+    -webkit-filter: blur(10px);
+    filter: blur(10px) brightness(50%);
+    transform: scale(1.1); 
+}
+
+input{
+    height: 30px;
+    border: none;
+}
+
+button {
+    background-color: #cf5f5f; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+img {
+    margin: 70px;
+    width: 20%;
+    filter: invert(100%) sepia(2%) saturate(710%) hue-rotate(249deg) brightness(120%) contrast(89%);
+    padding-bottom: 3px;
+    padding-top: 5px;
+}
+
+h3{
+    line-height: 0px;
+}
