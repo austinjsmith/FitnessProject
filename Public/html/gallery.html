@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="/css/gallery.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=\, initial-scale=1.0">
+        <title>Video Gallery</title>
+    </head>
+    <body>
+        
+        <div class="topbar">
+            <a href="gallery.html">all</a>
+            <a href="playListGallery.html">Playlists</a>
+            <a href="upload.html">Upload</a>
+            <a href="#legs">legs</a>
+            <a href="#arms">arms</a>
+            <a href="#abs">abs</a>
+            <a href="hips">hips</a>
+            <a href="#fullbody"> full body</a>
+            <a href="#stretch"> stretch</a>
+        </div>
+        <div class="container">
+            <h1>Workout videos</h1>
+            <div class="row">
+                <div class="col">
+                    <div class="feature-img">
+                        <img src="media/pic1.png" width="100%">
+                        <img src="media/play.png" class="play-btn" onclick="playVideo('media/vid1.mp4')">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="small-img-row">
+                        <div class="small-img">
+                            <img src="media/pic2.png">
+                            <img src="media/play.png" class="play-btn" onclick="playVideo('media/vid2.mp4')">
+                        </div>
+                    </div>
+                    <p>workout picture1<br> at home</p>
+
+                    <div class="small-img-row">
+                        <div class="small-img">
+                            <img src="media/pic3.png">
+                            <img src="media/play.png" class="play-btn" onclick="playVideo('media/vid3.mp4')">
+                        </div>
+                    </div>
+                    <p>workout picture2<br> at gym</p>
+
+                    <div class="small-img-row">
+                        <div class="small-img">
+                            <img src="media/pic3.png">
+                            <img src="media/play.png" class="play-btn" onclick="playVideo('media/vid4.mp4')">
+                        </div>
+                    </div>
+                    <p>workout picture<br> outside</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="video-player" id="videoPlayer">
+            <video width="100%" controls autoplay id="myVideo">
+                <source src="media/vid1.mp4" type="video/mp4">
+            </video>
+            <img src="media/close.png" class="close-btn" onclick="stopVideo()">
+        </div>
+    </body>
+</html>
