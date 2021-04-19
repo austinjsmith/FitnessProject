@@ -1,15 +1,14 @@
 "use strict";
 
 const express = require("express");
-const Joi = require("joi");
+const Joi = require('joi');
 const argon2 = require("argon2");
 const app = express();
 const path = require("path");
 const redis = require("redis");
 const session = require("express-session");
 const ejs = require("ejs");
-const {leanValue} = require("./public/js/addmeal");
-//const {schemas, VALIDATION_OPTIONS} = require("./validators/allValidators");
+const {schemas, VALIDATION_OPTIONS} = require("./validators/allValidators");
 
 const calTdee = require ("./public/js/calculate");
 
@@ -37,6 +36,7 @@ redisClient.on("error", function (err) {
 const {mealModel} = require("./Models/mealModel");
 const {tdeeModel} = require("./Models/tdeeModel");
 const {userModel} = require("./Models/userModel");
+const {postModel} = require("./Models/postModel");
 // const { emitWarning } = require("process");
 // const { connected } = require("process");
 
@@ -56,160 +56,169 @@ app.use(express.static(path.join(__dirname, "public"),{
 //create a new account
 app.post("/register", async (req, res) =>{
 	console.log("POST /users");
+    const {value, error} = schemas.postUsersSchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        return res.status(400).json(errorMessages);
+    }
+    else {
+        try {
+            const passwordHash = await argon2.hash(value.password, {hashLength: 5});
+            const userAdded = userModel.createUser({
+                username: value.username, 
+                passwordHash,
+                email: value.email
+            });
+        
+            if (userAdded) {
+                return res.redirect('/login.html'); // 200 OK
+            } else { // something went wrong
+                res.sendStatus(500); // 500 Internal Server Error
+            }
+        } catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    }
 
-	const {username, password, email} = req.body;
-
-	try {
-		const passwordHash = await argon2.hash(password, {hashLength: 5});
-		const userAdded = userModel.createUser({
-			username, 
-			passwordHash,
-			email
-		});
-	
-		if (userAdded) {
-			return res.redirect('/login.html'); // 200 OK
-		} else { // something went wrong
-			res.sendStatus(500); // 500 Internal Server Error
-		}
-	} catch (err) {
-		console.error(err);
-		return res.sendStatus(500);
-	}
 });
 
 //login into account
 app.post("/login", async (req, res) => {
-	const { email, password } = req.body;
+	// const { email, password } = req.body;
+    const { value, error } = schemas.postLoginSchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        return res.status(400).json(errorMessages);
+    }
+    else {
+        try {
+            const email = value.email;
+            const row = userModel.getPasswordHash(email); 
+            const user = userModel.getUserDataEmail(email);
     
-	try {
-        const row = userModel.getPasswordHash(email); 
-        const user = userModel.getUserDataEmail(email);
+            if (!row) {
+                return res.sendStatus(400);
+            }
+            const {passwordHash} = row;
+            
+            if ( await argon2.verify(passwordHash, value.password) ) {
+                //res.redirect('index.html');
+                req.session.regenerate(function(err) {
+                    if (err){
+                        console.log(err);
+                        return res.sendStatus(500);
+                    } else {
+                        req.session.userID = user.userID;
+                        req.session.email = user.email;
+                        req.session.username = user.username;
+                        req.session.isLoggedIn = 1;
+                        return res.redirect('index.html');
+                    }
+                });
+            } else {
+                return res.sendStatus(400);
+            }
+        } catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
+        }
+    }
 
-		if (!row) {
-			return res.sendStatus(400);
-		}
-
-		const {passwordHash} = row;
-		
-		if ( await argon2.verify(passwordHash, password) ) {
-            //res.redirect('index.html');
-            req.session.regenerate(function(err) {
-                if (err){
-                    console.log(err);
-                    return res.sendStatus(500);
-                } else {
-                    req.session.userID = user.userID;
-                    req.session.email = user.email;
-                    req.session.username = user.username;
-                    req.session.isLoggedIn = 1;
-                    return res.redirect('index.html');
-                }
-            });
-		} else {
-			return res.sendStatus(400);
-		}
-	} catch (err) {
-		console.error(err);
-		return res.sendStatus(500);
-	}
 });
 
 
 app.post("/logout", async (req, res) => {
 	req.session.destroy(function(err) {
         //if user isnt logged in 
-        // if (req.session.isLoggedIn){
+        // if (req.session.isLoggedIn !== 'undefined'){
         //     if (req.session.isLoggedIn !== 1){
         //         return res.redirect("/login.html");
         //     }
-            //if it fails to destroy
-            if (err){
-                return res.sendStatus(500);
-            }
-            //if destoryed
-            else {
-                return res.redirect("/login.html");
-            }
-        
-		
+        // }
+
+        //if it fails to destroy
+        if (err){
+            return res.sendStatus(500);
+        }
+        //if destoryed
+        else {
+            return res.redirect("/login.html");
+        }
 	});
 });
+
 
 //adding a new meal for calories
 app.post("/calories", (req, res) => {
     console.log("POST /calories");
-    const {mealname, maincalorie, fats, carbs, proteins} = req.body;
-    try {
-        const add = mealModel.createMeal({
-            mealname,
-            maincalorie,
-            fats,
-            carbs, 
-            proteins,
-            userid: req.session.userID
-        });
-        console.log(add);
-        setTimeout(() => {
-            res.redirect('index.html');
-        }, 600);
-            
-        
-    } catch (err){
-        console.log(err);
-        return res.sendStatus(500);
+    const {value, error} = schemas.postMealSchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        //change to where it logs to screen
+        return res.status(400).json(errorMessages);
     }
+
+    else {
+        try {
+            const add = mealModel.createMeal({
+                mealname: value.mealname,
+                maincalorie: value.maincalorie,
+                fats: value.fats,
+                carbs: value.carbs, 
+                proteins: value.proteins,
+                userid: req.session.userID
+            });
+
+            if (add === true){
+                return res.sendStatus(200);
+            }
+                
+        } catch (err){
+            console.log(err);
+            return res.sendStatus(500);
+        }
+    }
+   
 });
 
-// app.get("/meals", (req,res) => {
-//     console.log("GET /meals");
-//     try {
-//         const meals = mealModel.getAllMeals();
-//         res.render("home", {meals});
-//     } catch (err) {
-//         console.log(err);
-//         return res.sendStatus(500);
-//     }
-// });
+app.get('/meallog', (req, res) => {
+    let todaydate = new Date();
+    let month = todaydate.getUTCMonth() + 1;
+    let day = todaydate.getUTCDate();
+    let year = todaydate.getUTCFullYear();
+    let todaysdate = `${year}/${month}/${day}`;
 
-app.get('/home', (req, res) => {
-    console.log(req.session.userID);
-    const meals = mealModel.getAllMeals(req.session.userID);
-    console.log(meals.length);
-    res.render('home', {meals});
-})
-
-// app.post('/comp', (req, res) => {
-//     console.log("GET /tdee");
-//     const {gender, weight, lean, activity} = req.body;
-
-//     try {
-//         const comp = tdeeModel.createTDEE({
-//             gender,
-//             weight,
-//             lean,
-//             activity,
-//             user: "kresha"
-//         });
-        
-//         return res.sendStatus(200);
-//     } catch (err) {
-//         console.error(err);
-//         return false;
-//     }
-// });
+    const meal2 = mealModel.getTodaysMeals(req.session.userID, todaysdate);
+    const tdeeW = tdeeModel.getTDEE(req.session.userID);
+    const loggedIn = req.session.isLoggedIn;
+    
+    //if user is not logged in, send to the login page
+    if (loggedIn !== 1){
+        res.redirect('login.html');
+    } 
+    //meal and tdee exists
+    // if (meal2 && tdeeW){
+    res.render('meallog', {meal2, loggedIn, tdeeW, todaysdate});
+    // }
+});
 
 app.post("/counter", (req, res) =>{
     //set default user for testing
     console.log("POST /intake");
+    const {value, error} = schemas.postTDEESchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        //change to where it logs to screen
+        return res.status(400).json(errorMessages);
+    }
 
-    let {weight} = req.body;
     let lean = req.body.select;
     let gender = req.body.genderselect;
     let activity = req.body.activityselect;
 
     lean = parseFloat(lean);
-    weight = parseFloat(weight);
+    let weight = parseFloat(value.weight);
     activity = parseFloat(activity);
    
     //female
@@ -272,14 +281,49 @@ app.post("/counter", (req, res) =>{
 });
 
 app.get('/tdee', (req,res) => {
-    const usern = req.session.userID;
-    let t;
+    const userid = req.session.userID;
+    let t, gen;
+
     //if logged into an account
     if( req.session.isLoggedIn === 1 ){
-        t = tdeeModel.getTDEE(usern);
+        t = tdeeModel.getTDEE(userid);
+        gen = tdeeModel.getGender(userid);
     } 
-    res.render('tdee', {t});
+    res.render('tdee', {t, loggedIn: req.session.isLoggedIn, gen});
 });
+
+app.get('/forum', (req, res) =>{
+    const user = req.session.username;
+    const postData = postModel.getAllPostData();
+    if (postData && user){
+        res.render('forum', {user, postData});
+    }
+    else {
+        res.redirect('login.html');
+    }
+});
+
+app.post('/newpost', (req,res) => {
+    const {value, error} = schemas.postContentSchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        //change to where it logs to screen
+        return res.status(400).json(errorMessages);
+    }
+    else{
+        const posting = postModel.createPost({
+            userid: req.session.userID,
+            username: req.session.username,
+            postText: value.postText
+        });
+        
+        if (posting){
+            res.redirect('forum');
+        }
+    }
+
+});
+
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
