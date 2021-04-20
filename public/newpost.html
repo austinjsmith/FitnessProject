@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/newpost.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Post</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="viewpost" class="active">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="login.html">Log In</a>
+    </nav>
+    <center>
+        <div class="newpost">
+            <div class="postbody">
+                <form action="/posts/new" method="POST">
+                    <h3> New Post</h3><hr>
+                    <div class="formbody">
+                        <label for="title">Title</label><br>
+                        <input type="text" name="title" class="form-title" placeholder="Title">
+                    </div>
+                    <div class="formbody">
+                        <label for="postText">Text</label><br>
+                        <textarea name="postText" class="formbody" placeholder="Text"></textarea>
+                    </div>
+                    <div class="addpost">
+                        <br>
+                        <button type="submit" class="createpost">Create Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </center>
+</body>
+</html>

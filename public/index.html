@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="js/addmeal.js" defer></script>
     <link rel="stylesheet" href="/css/caloriecount.css">
-    <script type="text/javascript" src="/js/addmeal.js" de></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=\, initial-scale=1.0">
     <title>Calorie Calculator</title>
 </head>
 <body>
-    <div class="topbar">
-        <a href="#home">Home</a>
+    <nav class="topbar">
+        <a href="viewpost">Forum</a>
         <a href="#trainer">My Trainer</a>
-        <a href="index.html">Calorie Counter</a>
-        <a href= "home">Meal Log</a>
+        <a href="index.html" class="active">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
         <a href= "tdee">Calculator</a>
         <a href="login.html">Log In</a>
-    </div>
+    </nav>
         <div>
             <br>
             <h3>Meal Calories</h3>
@@ -24,17 +24,17 @@
                 Be sure to read your nutrition labels for calories and macros.
             </p>
         </div>
-
             <form id="mealForm" action="/calories" method="POST">
                 <div>
                     <label for="mealname">Meal Name:</label>
                     <br>
-                    <input id="mealname" name ="mealname"> 
+                    <input id="mealname" name ="mealname" required> 
                 </div>
                 <div>
                     <label for="maincalorie">Calories:</label>
+            
                     <br>
-                    <input id="mealcalorie" name="maincalorie">
+                    <input id="maincalorie" name="maincalorie" required>
                     <br>
                 </div>
                 <hr>
@@ -56,7 +56,16 @@
                     <input id="fats" name="fats">
                 </div>
                 <hr>
-                <button onclick="confirm()">Add Meal</button>
+                <button type="submit">Add Meal</button>
             </form>
+            <br>
+            <center>
+                <div id="errorContainer" class="hidden">
+                    <p id="errorMessage">Error</p>
+                    <br>
+                    <button id="closeError" onclick="show()">Close</button>
+                </div>
+            </center>
+            
 </body>
 </html>
