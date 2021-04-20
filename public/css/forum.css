@@ -1,0 +1,113 @@
+.topbar{
+    background-color: #333;
+    overflow: hidden;
+
+}
+
+.topbar a{
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 18px;
+    border-bottom: 2px solid #333;
+}
+
+.topbar a:hover{
+    border-bottom: 3px solid #cf5f5f;
+}  
+
+.topbar .active{
+    border-bottom: 3px solid #cf5f5f;
+}
+
+body{
+    margin: 0 auto;
+    background-color: #f2f2f2;
+    width: 100%
+}
+
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+}
+
+#welcome-user{
+    color: #f2f2f2;
+    font-size: 18px;
+    position: relative; top:3px; left: 40%;
+}
+
+.post{
+    height: 150px;
+    width: 800px;
+    border: 1px solid #f3f3f3;
+    margin: 0 auto;
+    position: relative; top: 30px;
+    color: #111; 
+    background-color: #eeeeee;
+    padding-bottom: 10px;
+    box-shadow: 2px 5px 15px  -5px #111;
+}
+
+
+#createbutton{
+    background-color: #cf5f5f; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#postText{
+    width: 400px;
+    height: 30px;
+}
+
+#username{
+    position: relative; bottom: 10px; left: 15px;
+    font-size: 20px;
+}
+
+#date{
+    font-size: 12px;
+    position: relative; bottom: 30px; left: 15px;
+}
+
+#post-content{
+    position: relative; bottom: 40px; left: 15px;
+}
+
+#like{
+    position: relative; left: 40%; bottom: 60px;
+    background-color: #cf5f5f; 
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#comment{
+    position: relative; left: 41%; bottom: 60px;
+    background-color: #cf5f5f; 
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#sep{
+    position: relative; bottom: 35px;
+}
+#comment-link{
+    color: white;
+    text-decoration: none;
+}

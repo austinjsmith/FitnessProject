@@ -2,19 +2,21 @@ html {
     font-family: "Arial", sans-serif;
     font-size: 30px;
 }
-
-body{
+body {
     background-color: #f2f2f2;
+    
     margin: 0 auto;
     padding:  0 0px 0px 0px;
     border: 5px black;
 }
 
-h3 {
-    color:  #cf5f5f;
-    margin: 10 auto;
-    text-shadow: 1px 1px 1px black;
-    text-align: left;
+h1{
+    color: white;
+    margin: 0 auto;
+    text-transform: uppercase;
+    font-size: 30px;
+    background-color: #111;
+    padding: 20px 20px 20px;
 }
 
 .topbar{
@@ -29,8 +31,55 @@ h3 {
     padding: 14px 16px;
     text-decoration: none;
     font-size: 18px;
+    border-bottom: 2px solid #333;
 }
 
 .topbar a:hover{
+    border-bottom: 3px solid #cf5f5f;
+} 
+
+table{
+    width: 100%;
+    margin-top: 0%;
+    color: black;
+    position: absolute;
+    top: 55px;
+    border-collapse: collapse;
+}
+
+tr:nth-child(even) {
+    background-color: #e0e0e0;
+}
+
+th{
     background-color: #cf5f5f;
+    text-align: left;
+    color: #f2f2f2;
+    font-size: 30px;
+}
+
+.topbar .active{
+    border-bottom: 3px solid #cf5f5f;
+}
+
+#nologin{
+    color:  #cf5f5f;
+}
+
+#total-cal{
+    padding: 10px;
+    position: relative; bottom: -100px;
+    margin: 0 auto;
+    background-color: #cf5f5f;
+    color: white;
+    width: 50%;
+}
+
+#cal-left{
+    padding: 10px;
+    position: relative; bottom: -125px;
+    margin: 0 auto;
+    background-color: #cf5f5f;
+    color: white;
+    width: 50%;
 }
