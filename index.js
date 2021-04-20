@@ -37,8 +37,7 @@ const {mealModel} = require("./Models/mealModel");
 const {tdeeModel} = require("./Models/tdeeModel");
 const {userModel} = require("./Models/userModel");
 const {postModel} = require("./Models/postModel");
-// const { emitWarning } = require("process");
-// const { connected } = require("process");
+const {commentModel} = require("./Models/commentModel");
 
 app.use(express.static(path.join(__dirname, "public"), {
     extensions: ['html'],
@@ -296,7 +295,7 @@ app.get('/forum', (req, res) =>{
     const user = req.session.username;
     const postData = postModel.getAllPostData();
     if (postData && user){
-        res.render('forum', {user, postData});
+        res.render('viewpost', {user, postData});
     }
     else {
         res.redirect('login.html');
@@ -324,6 +323,86 @@ app.post('/newpost', (req,res) => {
 
 });
 
+app.get("/newpost", (req, res) => {
+    res.redirect('newpost.html');
+});
+
+app.post("/posts/new", (req,res) => {
+    const {title, postText} = req.body;
+    console.log(postText);
+    try {
+        const newPost = postModel.createPost({
+            userid: req.session.userID,
+            postText: postText,
+            title: title
+        });
+
+        if (newPost){
+            res.redirect('/viewpost');
+        } else {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        console.error(err);
+        return res.sendStatus(500);
+    }
+
+});
+
+app.get("/viewpost", (req,res) => {
+    try{
+        const allPosts = postModel.getAllPostData();
+        if (allPosts.length > 0){
+            res.render('viewpost', {allPosts});
+        } else {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        console.error(err);
+        return res.sendStatus(500);
+    }
+});
+
+app.get("/posts/:postid", (req, res) =>{
+    try{
+        const getPost = postModel.getPostByID(req.params.postid);
+        const getComments = commentModel.getCommentsByID(req.params.postid);
+        if (getPost){
+            res.render('showpost', {getPost, getComments});
+    
+        } else {
+            return res.sendStatus(400);
+        }
+      
+    } catch (err) {
+        console.error(err);
+        return res.sendStatus(500);
+    }
+    
+});
+
+app.post("/posts/:postid/comments" , (req, res) => {
+    const {commentText} = req.body;
+    try {
+        const newComment = commentModel.createComment({
+            userid: req.session.userid,
+            postid: req.params.postid,
+            commentText: commentText,
+            username: req.session.username
+        });
+
+        if (newComment){
+            // return res.sendStatus(200);
+            console.log("new comment");
+            res.redirect("/posts/" + req.params.postid);
+        } else {
+            return res.sendStatus(400);
+        }
+    } catch (err) {
+        console.error(err);
+        return res.sendStatus(500);
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
