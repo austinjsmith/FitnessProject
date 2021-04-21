@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/forum.css">
+    <script type = "text/javascript" src="/js/posts.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="forum" class="active">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="login.html">Log In</a>
+        <span id="welcome-user">
+            <%if (typeof user !== 'undefined'){ %> 
+                Welcome, <%= user %> 
+            <% } %>
+            <%if (typeof user === 'undefined') { %>
+                Welcome, guest
+            <% } %>
+        </span>
+    </nav>
+    <div id="createpost">
+        <center>
+            <!-- <form id="createPost" action="/newpost" method="POST"> -->
+                <br>
+                <!-- <input type="text" name="postText" id="postText" placeholder="Type your post here"> -->
+                <button id="createbutton" onclick="window.location.href='newpost.html';">New Post</button>
+            <!-- </form>   -->
+        </center>
+    </div>
+
+    <!-- <div class="postContainer">
+        <% for (const posts of postData) { %>
+            <div class="post">
+                <p id="username"><%= posts.username %> </p>
+                <p id="date"><%= posts.createdOn %></p>
+                <center>
+                    <p id="post-content"><%= posts.postText %></p>
+                </center>
+                <div class="interact">
+                    <form id="likePost" action="/likepost" method="POST">
+                        <span><button id="like">LIKE</button></span>
+                    </form>
+                    <span><button id="comment"><a href="login.html"id="comment-link">COMMENT</a></button></span>
+                </div>
+            </div>
+            <br>
+        <% } %>
+    </div> -->
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/showpost.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Post</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="viewpost" class="active">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="#index.html">Calorie Counter</a>
+        <a href= "#meallog">Meal Log</a>
+        <a href= "#tdee">Calculator</a>
+        <a href="#login.html">Log In</a>
+    </nav>
+    <center>
+        <div class="postdata">
+            <h4> <%= getPost.title %> </h4>
+            <p><%= getPost.postText %></p>
+            <hr>
+        </div>
+            <% let url = "/posts/" + getPost.postid + "/comments"; %>
+            <form action = <%= url %> method="POST">
+                <label for="comment">Comment</label>
+                <input type="text" name="commentText">
+                <br><br>
+                <button type="submit">Add Comment</button>
+                <br>
+            </form>
+            <div class="allComments">
+                <% for (const comment of getComments) { %>
+                    <p>
+                        <%= comment.username %>:
+                        <%= comment.commentText %>
+                    </p>
+                <% } %>
+            </div>
+    </center>
+    
+    
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/viewpost.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="viewpost" class="active">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="login.html">Log In</a>
+    </nav>
+    <br>
+    <center>
+        <button id="createbutton" onclick="window.location.href='newpost.html';">New Post</button>
+    </center>
+    <br>
+    <div class="titles">
+        
+        <% for( const post of allPosts){ %>
+            <% let route = "posts/" + post.postid; %>
+            <div class="post">
+                Topic: <a href = <%= route %>> <%= post.title %> </a>
+                <hr>
+            </div>
+
+            
+        <% } %>
+    </div>
+    
+
+</body>
+</html>
