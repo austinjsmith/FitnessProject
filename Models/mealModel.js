@@ -12,10 +12,18 @@ class mealModel{
         try {
             const sql =` 
             INSERT INTO Meals 
-                (mealname, maincalorie, fats, carbs, proteins, userid)
+                (mealname, maincalorie, fats, carbs, proteins, userid, dateadded)
             VALUES 
-                (@mealname, @maincalorie, @fats, @carbs, @proteins, @userid)
+                (@mealname, @maincalorie, @fats, @carbs, @proteins, @userid, @dateadded)
             `;
+
+            let todaydate = new Date();
+            let month = todaydate.getUTCMonth() + 1;
+            let day = todaydate.getUTCDate();
+            let year = todaydate.getUTCFullYear();
+            
+            let todaysdate = `${year}/${month}/${day}`;
+            meal.dateadded = todaysdate;
             db.prepare(sql).run(meal);
             return true;
 
@@ -35,8 +43,23 @@ class mealModel{
         } catch (err){
             return [];
         }
-        
     }
+
+    getTodaysMeals(userid, today){
+        try{
+            const sql = `
+                SELECT * FROM Meals 
+                WHERE userid=@userid 
+                AND dateadded == @today
+                ORDER BY rowid DESC
+            `;
+            return db.prepare(sql).all({userid, today});
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    }
+
 }
 
 exports.mealModel = new mealModel(db);
