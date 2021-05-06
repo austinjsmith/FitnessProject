@@ -1,5 +1,13 @@
 "use strict";
 
+//configure the envioronment file
+require("dotenv").config();
+
+
+//for server, set to production, otherwise, set to development
+const isDevelopement = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
+const isProduction = process.env.NODE_ENV === "production";
+
 const express = require("express");
 const Joi = require('joi');
 const argon2 = require("argon2");
@@ -8,9 +16,14 @@ const path = require("path");
 const redis = require("redis");
 const session = require("express-session");
 const ejs = require("ejs");
+const helmet = require("helmet");
+const calTdee = require ("./public/js/calculate");
 const {schemas, VALIDATION_OPTIONS} = require("./validators/allValidators");
 
-const calTdee = require ("./public/js/calculate");
+if (isProduction) {
+	app.set('trust proxy', 1);
+	app.use(helmet());
+}
 
 let RedisStore = require("connect-redis")(session);
 let redisClient = redis.createClient();
@@ -18,16 +31,18 @@ let redisClient = redis.createClient();
 app.set('view engine','ejs');
 
 const sessionConfig = {
-    store: new RedisStore({ client: redisClient }),
-    secret: "somethingSecret",
-    resave: false,
-    saveUninitialized: false,
-    name: "session", // now it is just a generic name
-    cookie: {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 8, // 8 hours
-    }
-}
+	store: new RedisStore({ client: redisClient }),
+	secret: process.env.SECRET,
+	resave: false,
+	saveUninitialized: false,
+	name: "session",
+	cookie: {
+		sameSite: isProduction,
+		secure: isProduction,
+		httpOnly: true,
+	    maxAge: process.env.MAX_AGE || 1000 * 60 * 60 * 8, // Defaults to 8 hours
+	}
+};
 
 redisClient.on("error", function (err) {
     console.log("error" + err);
@@ -46,11 +61,13 @@ app.use(express.json());
 app.use(express.urlencoded ({extended: true}));
 app.use(session(sessionConfig));
 
-const PORT = 8001;
+app.get("/login", (req, res) =>{
+    res.render('login', {isLogged: req.session.isLoggedIn});
+});
 
-app.use(express.static(path.join(__dirname, "public"),{
-    extensions: ['html'],
-}));
+app.get("/", (req, res) => {
+    res.redirect('/login');
+})
 
 //create a new account
 app.post("/register", async (req, res) =>{
@@ -70,7 +87,7 @@ app.post("/register", async (req, res) =>{
             });
         
             if (userAdded) {
-                return res.redirect('/login.html'); // 200 OK
+                return res.render('login'); // 200 OK
             } else { // something went wrong
                 res.sendStatus(500); // 500 Internal Server Error
             }
@@ -82,9 +99,7 @@ app.post("/register", async (req, res) =>{
 
 });
 
-//login into account
 app.post("/login", async (req, res) => {
-	// const { email, password } = req.body;
     const { value, error } = schemas.postLoginSchema.validate(req.body, VALIDATION_OPTIONS);
     if (error){
         const errorMessages = error.details.map( error => error.message );
@@ -112,7 +127,12 @@ app.post("/login", async (req, res) => {
                         req.session.email = user.email;
                         req.session.username = user.username;
                         req.session.isLoggedIn = 1;
-                        return res.redirect('index.html');
+
+                        //check if admin
+                        // if (email.includes(process.env.ADMIN) ){
+                        //     res.redirect(TO AUSTINS SIDE OF THE WEBSITE)
+                        // } ELSE REDIRECT TO INDEX
+                        return res.redirect('index');
                     }
                 });
             } else {
@@ -128,23 +148,20 @@ app.post("/login", async (req, res) => {
 
 
 app.post("/logout", async (req, res) => {
-	req.session.destroy(function(err) {
-        //if user isnt logged in 
-        // if (req.session.isLoggedIn !== 'undefined'){
-        //     if (req.session.isLoggedIn !== 1){
-        //         return res.redirect("/login.html");
-        //     }
-        // }
-
-        //if it fails to destroy
-        if (err){
-            return res.sendStatus(500);
-        }
-        //if destoryed
-        else {
-            return res.redirect("/login.html");
-        }
-	});
+    if (req.session.isLoggedIn !== 1){
+        return res.redirect('/login');
+    } else {
+        req.session.destroy(function(err) {
+            //if fails to destory
+            if (err){
+                return res.sendStatus(500);
+            } else {
+                //logged out 
+                console.log("logged out successfully");
+                return res.redirect('/login');
+            }
+        })
+    }
 });
 
 
@@ -154,11 +171,9 @@ app.post("/calories", (req, res) => {
     const {value, error} = schemas.postMealSchema.validate(req.body, VALIDATION_OPTIONS);
     if (error){
         const errorMessages = error.details.map( error => error.message );
-        //change to where it logs to screen
+        console.log(errorMessages);
         return res.status(400).json(errorMessages);
-    }
-
-    else {
+    } else {
         try {
             const add = mealModel.createMeal({
                 mealname: value.mealname,
@@ -170,15 +185,29 @@ app.post("/calories", (req, res) => {
             });
 
             if (add === true){
-                return res.sendStatus(200);
+                res.redirect('/meallog');
             }
                 
         } catch (err){
-            console.log(err);
+            console.error(err);
             return res.sendStatus(500);
         }
     }
    
+});
+
+app.get("/index", (req,res) =>{
+    try{
+        if(req.session.isLoggedIn !==  1){
+            return res.render('login');
+        } else {
+            res.render('index');
+        } 
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+    
 });
 
 app.get('/meallog', (req, res) => {
@@ -187,6 +216,7 @@ app.get('/meallog', (req, res) => {
     let day = todaydate.getUTCDate();
     let year = todaydate.getUTCFullYear();
     let todaysdate = `${year}/${month}/${day}`;
+    let showDate = `${month}/${day}/${year}`;
 
     const meal2 = mealModel.getTodaysMeals(req.session.userID, todaysdate);
     const tdeeW = tdeeModel.getTDEE(req.session.userID);
@@ -194,12 +224,10 @@ app.get('/meallog', (req, res) => {
     
     //if user is not logged in, send to the login page
     if (loggedIn !== 1){
-        res.redirect('login.html');
-    } 
-    //meal and tdee exists
-    // if (meal2 && tdeeW){
-    res.render('meallog', {meal2, loggedIn, tdeeW, todaysdate});
-    // }
+        res.render('login');
+    } else {
+        res.render('meallog', {meal2, loggedIn, tdeeW, showDate});
+    }
 });
 
 app.post("/counter", (req, res) =>{
@@ -208,155 +236,128 @@ app.post("/counter", (req, res) =>{
     const {value, error} = schemas.postTDEESchema.validate(req.body, VALIDATION_OPTIONS);
     if (error){
         const errorMessages = error.details.map( error => error.message );
-        //change to where it logs to screen
         return res.status(400).json(errorMessages);
-    }
+        
+    } else {
 
-    let lean = req.body.select;
-    let gender = req.body.genderselect;
-    let activity = req.body.activityselect;
+        let height = req.body.height;
+        let goal = req.body.goal;
+        let gender = req.body.gender;
+        let activity = req.body.activity;
+        let weight = value.weight;
+        let age = value.age;
+       
+        height = parseInt(height);
+        weight = parseFloat(value.weight);
+        age = parseInt(value.age);
+        activity = parseFloat(activity);
+        goal = parseInt(goal);
 
-    lean = parseFloat(lean);
-    let weight = parseFloat(value.weight);
-    activity = parseFloat(activity);
-   
-    //female
-    if (gender === "1"){
-        gender = "female";
-        if (lean === 5.0){
-           lean = 1.0; 
-        }
-        else if (lean === 6.0){
-            lean = 0.95; 
-         }
-        if (lean === 7.0){
-            lean = 0.9; 
-         }
-        else if (lean === 8.0){
-            lean = 0.85;
-        }
-    }
-    //male
-    if (gender === "2"){
-        gender = "male";
-        if (lean === 1.0){
-            lean = 1.0; 
-         }
-        else if (lean === 2.0){
-             lean = 0.95; 
-          }
-        else if (lean === 3.0){
-             lean = 0.9; 
-          }
-        else if (lean === 4.0){
-             lean = 0.85;
-         }
-    }
-
-    let tdeeW = calTdee.calTdee(weight, gender, lean, activity);
-    tdeeW = parseInt(tdeeW);
+        try {
+            let tdeeW = calTdee.calTdee(weight, gender, height, activity, goal, age);
+            //if user has account
+            if (req.session.isLoggedIn){
+                const user = req.session.userID;
+                const tdeenow = tdeeModel.getTDEE(user);
+                
+                //if user is defaulted, create tdee
+                if (typeof tdeenow === 'undefined'){
+                    const cal = tdeeModel.createTDEE({
+                        weight, 
+                        gender, 
+                        height,
+                        activity, 
+                        age,
+                        userid: user,
+                        tdee: tdeeW,
+                        goal: goal
+                    });
+                
+                    if (cal){
+                        res.redirect('tdee');
+                    } else {
+                        res.sendStatus(400);
+                    }
+                } else {
+                    const update = tdeeModel.updateTDEE( tdeeW, user );
+                    if (update){
+                        res.redirect('tdee');
     
-    //if user has account
-    if (req.session.isLoggedIn){
-        const user = req.session.userID;
-        const tdeenow = tdeeModel.getTDEE(user);
-
-        //if user is defaulted, create tdee
-        if (typeof tdeenow === 'undefined'){
-            tdeeModel.createTDEE({
-                weight, 
-                gender, 
-                lean: lean, 
-                activity, 
-                userid: user,
-                tdee: tdeeW
-            });
-        } else {
-            tdeeModel.updateTDEE( tdeeW, user );
+                    } else {
+                        res.sendStatus(400);
+                    }
+                }
+            }
+            
+        } catch (err) {
+            console.log(error);
+            res.sendStatus(500);
         }
-    }
-
-    res.redirect('tdee');
+    }  
 });
 
 app.get('/tdee', (req,res) => {
     const userid = req.session.userID;
     let t, gen;
+    try{
+        //if user is not logged in, send to the login page
+        if (req.session.isLoggedIn !== 1){
+            return res.redirect('login');
+        } else if ( req.session.isLoggedIn === 1 ){
+            t = tdeeModel.getTDEE(userid);
 
-    //if logged into an account
-    if( req.session.isLoggedIn === 1 ){
-        t = tdeeModel.getTDEE(userid);
-        gen = tdeeModel.getGender(userid);
-    } 
-    res.render('tdee', {t, loggedIn: req.session.isLoggedIn, gen});
-});
-
-app.get('/forum', (req, res) =>{
-    const user = req.session.username;
-    const postData = postModel.getAllPostData();
-    if (postData && user){
-        res.render('viewpost', {user, postData});
-    }
-    else {
-        res.redirect('login.html');
+            res.render('tdee', {t, loggedIn: req.session.isLoggedIn});
+        }
+    } catch (err) {
+        console.error(err);
+        return res.sendStatus(500);
     }
 });
 
 app.post('/newpost', (req,res) => {
-    const {value, error} = schemas.postContentSchema.validate(req.body, VALIDATION_OPTIONS);
+    const {value, error} = schemas.postPostSchema.validate(req.body, VALIDATION_OPTIONS);
     if (error){
         const errorMessages = error.details.map( error => error.message );
         //change to where it logs to screen
         return res.status(400).json(errorMessages);
     }
     else{
-        const posting = postModel.createPost({
-            userid: req.session.userID,
-            username: req.session.username,
-            postText: value.postText
-        });
-        
-        if (posting){
-            res.redirect('forum');
+        try{
+            const posting = postModel.createPost({
+                userid: req.session.userID,
+                username: req.session.username,
+                postText: value.postText,
+                title: value.title
+            });
+
+            if (posting){
+                res.redirect('viewpost');
+            } else {
+                res.sendStatus(400);
+            }
+
+        } catch (err) {
+            console.error(err);
+            res.sendStatus(500);
         }
+        
     }
 
 });
 
 app.get("/newpost", (req, res) => {
-    res.redirect('newpost.html');
-});
-
-app.post("/posts/new", (req,res) => {
-    const {title, postText} = req.body;
-    console.log(postText);
-    try {
-        const newPost = postModel.createPost({
-            userid: req.session.userID,
-            postText: postText,
-            title: title
-        });
-
-        if (newPost){
-            res.redirect('/viewpost');
-        } else {
-            return res.sendStatus(400);
-        }
-    } catch (err) {
-        console.error(err);
+    if (req.session.isLoggedIn){
+        res.render('newpost');
+    } else {
         return res.sendStatus(500);
     }
-
 });
 
 app.get("/viewpost", (req,res) => {
     try{
         const allPosts = postModel.getAllPostData();
-        if (allPosts.length > 0){
-            res.render('viewpost', {allPosts});
-        } else {
-            return res.sendStatus(400);
-        }
+        const loggedIn = req.session.isLoggedIn;
+        res.render('viewpost', {allPosts, loggedIn});
     } catch (err) {
         console.error(err);
         return res.sendStatus(500);
@@ -367,43 +368,87 @@ app.get("/posts/:postid", (req, res) =>{
     try{
         const getPost = postModel.getPostByID(req.params.postid);
         const getComments = commentModel.getCommentsByID(req.params.postid);
+        const loggedIn = req.session.isLoggedIn;
+        let username;
         if (getPost){
-            res.render('showpost', {getPost, getComments});
-    
-        } else {
-            return res.sendStatus(400);
+            username = userModel.getUserUsernameByID(getPost.userid);
+        } else{
+            username = "n/a";
         }
-      
+       
+        const currUsername = req.session.username;
+        if (getPost){
+            res.render('showpost', {getPost, getComments, loggedIn, username, currUsername});
+        } else {
+            return res.sendStatus(500);
+        }
     } catch (err) {
         console.error(err);
         return res.sendStatus(500);
-    }
-    
+    } 
 });
 
 app.post("/posts/:postid/comments" , (req, res) => {
-    const {commentText} = req.body;
-    try {
-        const newComment = commentModel.createComment({
-            userid: req.session.userid,
-            postid: req.params.postid,
-            commentText: commentText,
-            username: req.session.username
-        });
-
-        if (newComment){
-            // return res.sendStatus(200);
-            console.log("new comment");
-            res.redirect("/posts/" + req.params.postid);
-        } else {
-            return res.sendStatus(400);
+    const {value, error} = schemas.postCommentSchema.validate(req.body, VALIDATION_OPTIONS);
+    if (error){
+        const errorMessages = error.details.map( error => error.message );
+        return res.status(400).json(errorMessages);
+    } else {
+        try {
+            const newComment = commentModel.createComment({
+                userid: req.session.userid,
+                postid: req.params.postid,
+                commentText: value.commentText,
+                username: req.session.username
+            });
+    
+            if (newComment){
+                res.redirect("/posts/" + req.params.postid);
+            } else {
+                return res.sendStatus(400);
+            }
+        } catch (err) {
+            console.error(err);
+            return res.sendStatus(500);
         }
-    } catch (err) {
-        console.error(err);
-        return res.sendStatus(500);
+    }
+
+});
+
+app.post("/posts/:postid/delete", (req, res) => {
+    const deletepost = postModel.deletePost(req.params.postid);
+    if (deletepost){
+        res.redirect('/viewpost');
+    } else if (req.session.isLoggedIn !== 1){
+        res.redirect('/login');
+    } else {
+        res.sendStatus(400);
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+app.post("/posts/:commentID/deletecomment", (req, res) => {
+    const deleteComment = commentModel.deleteComment(req.params.commentID);
+    if (deleteComment){
+        res.redirect('back');
+    } else if (req.session.isLoggedIn !== 1){
+        res.redirect('/login');
+    } else {
+        res.sendStatus(400);
+    }
+});
+
+app.listen(process.env.PORT, () => {
+	// Colorize output with ANSI escape codes
+	// https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
+	const BLUE = "\u001b[34;1m";
+	const GREEN = "\u001b[32;1m";
+	const RESET = "\u001b[0m";
+	
+	// Default to development mode
+	let mode = process.env.NODE_ENV || "development";
+	// Then add some color
+	const color = isProduction ? GREEN : BLUE;
+	mode = `${color}${mode}${RESET}`;
+	
+	console.log(`Server is listenting on http://localhost:${process.env.PORT} in ${mode} mode`);
 });
