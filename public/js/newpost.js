@@ -1,72 +1,66 @@
 "use strict";
-const mealForm = document.querySelector("#mealForm");
+
+const postForm = document.querySelector("#postForm");
 const errorContainer = document.querySelector("#errorContainer");
 
-
-async function logMeal(event){
+async function newPost(event){
     event.preventDefault();
-
-    const mealname = mealForm.querySelector("#mealname").value;
-    const maincalorie = mealForm.querySelector("#maincalorie").value;
-    const proteins = mealForm.querySelector("#proteins").value;
-    const carbs = mealForm.querySelector("#carbs").value;
-    const fats = mealForm.querySelector("#fats").value;
-
-    try {
-        const response = await fetch(`${window.location.origin}/calories`, {
+    const title = document.querySelector(".form-title").value;
+    const postText = document.querySelector(".postText").value;
+    try{
+        const response = await fetch(`${window.location.origin}/newpost`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({mealname, maincalorie, proteins, carbs, fats})
+            body: JSON.stringify({title, postText})
         });
-        
-        console.log(response); 
+
+        console.log(response + title + postText);
 
         if (response.status === 200){
-            errorContainer.classList.remove("hidden");
-            const errorMessage = errorContainer.querySelector("#errorMessage");
-            errorMessage.textContent = "Meal Added";
-        }  else if (response.status === 400){
-            try {
+            // postForm.submit();
+            window.location = `${window.location.origin}/viewpost`;
+        } else if (response.status === 400){
+            try{
                 const errors = await response.json();
-        
+
                 errorContainer.classList.remove("hidden");
                 const errorMessage = errorContainer.querySelector("#errorMessage");
-                let errorString = "";
+                let errorString ="";
                 for (const error of errors){
                     errorString += error + ",\n\n";
                     console.log(error);
                 }
                 errorMessage.textContent = errorString;
+                console.log(title + " " + postText + "here");
             } catch (err) {
                 console.error(err);
                 errorContainer.classList.remove("hidden");
                 const errorMessage = errorContainer.querySelector("#errorMessage");
-                errorMessage.textContent = "Could not parse";
+                errorMessage.textContent = err;
             }
+            
         } else if (response.status === 500) {
             errorContainer.classList.remove("hidden");
             const errorMessage = errorContainer.querySelector("#errorMessage");
-            errorMessage.textContent = "Could not create account";
+            errorMessage.textContent = "Could not post";
         } else {
             errorContainer.classList.remove("hidden");
             const errorMessage = errorContainer.querySelector("#errorMessage");
             errorMessage.textContent = "Unknown error";
         }
-        
-    } catch (err) {
+    } catch (err){
         console.error(err);
         errorContainer.classList.remove("hidden");
         const errorMessage = errorContainer.querySelector("#errorMessage");
-        errorMessage.textContent = "Could not parse here";
+        errorMessage.textContent = "Unknown error";
     }
     return false;
 }
 
-
+postForm.addEventListener('submit', newPost);
 
 function show() {
     errorContainer.classList.add("hidden");
 }
-mealForm.addEventListener('submit', logMeal);
