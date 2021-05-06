@@ -74,6 +74,17 @@ class postModel{
             return;
         }
     }
+
+    deletePost(postid){
+        try{
+            const sql = `DELETE FROM Posts WHERE postid=@postid`;
+            db.prepare(sql).run({postid});
+            return true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
 }    
 
 exports.postModel = new postModel(db);

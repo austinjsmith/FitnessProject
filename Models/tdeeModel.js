@@ -13,9 +13,9 @@ class tdeeModel{
         try {
             const sql=
                 `INSERT INTO Composition 
-                    (weight, gender, lean, activity, userid, tdee)
+                    (weight, gender, height, activity, userid, tdee, goal, age)
                 VALUES 
-                    (@weight, @gender, @lean, @activity, @userid, @tdee)
+                    (@weight, @gender, @height, @activity, @userid, @tdee, @goal, @age)
                 `;
             
             db.prepare(sql).run(comp);

@@ -55,6 +55,16 @@ class userModel{
             return false;        // return false to indicate failure
         }
     }
+
+    getUserUsernameByID (userid){
+        try {
+            const sql = `SELECT username FROM Users WHERE userid=@userid`;
+            return db.prepare(sql).get({userid});
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
 }
 
 exports.userModel = new userModel(db);
