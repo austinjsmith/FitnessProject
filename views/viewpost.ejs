@@ -2,37 +2,42 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/viewpost.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <script src="/js/viewpost.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum</title>
+    <title>Posts</title>
 </head>
 <body>
     <nav class="topbar">
-        <a href="viewpost" class="active">Forum</a>
+        <a href="/viewpost" class="active">Forum</a>
         <a href="#trainer">My Trainer</a>
-        <a href="index.html">Calorie Counter</a>
-        <a href= "meallog">Meal Log</a>
-        <a href= "tdee">Calculator</a>
-        <a href="login.html">Log In</a>
+        <a href="/index">Calorie Counter</a>
+        <a href= "/meallog">Meal Log</a>
+        <a href= "/tdee">Calculator</a>
+        <a href="/login">Log In</a>
     </nav>
+    <% if (loggedIn === 1){ %>
+        <br>
+        <div style="text-align: center;">
+            <button id="createbutton"><a href ='/newpost' id="newpost-button">New Post</a></button>
+    
+        </div>
+    <% } %>
+    <% if (loggedIn !== 1){ %>
+        <div id="noAccount" style="text-align: center;">
+            <p>Log in to start posting</p>
+        </div>
+    <% } %>
     <br>
-    <center>
-        <button id="createbutton" onclick="window.location.href='newpost.html';">New Post</button>
-    </center>
-    <br>
-    <div class="titles">
-        
+    <div class="titles">   
         <% for( const post of allPosts){ %>
             <% let route = "posts/" + post.postid; %>
             <div class="post">
-                Topic: <a href = <%= route %>> <%= post.title %> </a>
-                <hr>
+                <hr id="titlebreak">
+                Topic: <a id="posttitle" href = <%= route %>> <%= post.title %> </a>
             </div>
-
-            
         <% } %>
     </div>
-    
-
 </body>
 </html>

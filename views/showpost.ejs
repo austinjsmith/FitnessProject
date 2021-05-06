@@ -2,43 +2,78 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/showpost.css">
+    <link rel="stylesheet" href="/css/navbar.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/showpost.js" defer></script>
     <title>Show Post</title>
 </head>
 <body>
     <nav class="topbar">
-        <a href="viewpost" class="active">Forum</a>
+        <a href="/viewpost" class="active">Forum</a>
         <a href="#trainer">My Trainer</a>
-        <a href="#index.html">Calorie Counter</a>
-        <a href= "#meallog">Meal Log</a>
-        <a href= "#tdee">Calculator</a>
-        <a href="#login.html">Log In</a>
+        <a href="/index">Calorie Counter</a>
+        <a href= "/meallog">Meal Log</a>
+        <a href= "/tdee">Calculator</a>
+        <a href="/login">Log In</a>
     </nav>
-    <center>
+   
         <div class="postdata">
-            <h4> <%= getPost.title %> </h4>
-            <p><%= getPost.postText %></p>
-            <hr>
-        </div>
-            <% let url = "/posts/" + getPost.postid + "/comments"; %>
-            <form action = <%= url %> method="POST">
-                <label for="comment">Comment</label>
-                <input type="text" name="commentText">
-                <br><br>
-                <button type="submit">Add Comment</button>
-                <br>
-            </form>
-            <div class="allComments">
-                <% for (const comment of getComments) { %>
-                    <p>
-                        <%= comment.username %>:
-                        <%= comment.commentText %>
-                    </p>
+            <div class="heading">
+                <h4> Title: <%= getPost.title %>  
+                <!-- delete this, just for testing purposes. the constraints on the user model wont allow for this -->
+                <% if (typeof username !== 'undefined') { %>
+                    <div id="username"> <%= username.username%> <%=getPost.createdOn%></div>
                 <% } %>
+                <!-- end of delete -->
+                
+                </h4>
             </div>
-    </center>
-    
-    
+            <% let deleteurl = "/posts/" + getPost.postid + "/delete"; %>
+            <!-- <div style="display: none;" id="postid"><%= getPost.postid %></div> -->
+            <div>
+
+          
+            <p id="postText" style="line-height: 40px;"><%= getPost.postText %></p>
+            <% let url = "/posts/" + getPost.postid + "/comments"; %>
+            <% if (loggedIn === 1){ %>
+                <form id="commentForm" action = <%= url %> method="POST">
+                    <input type="text" name="commentText" id="commentinput" placeholder="Comment Here" >  
+                    <button id="commentbutton" type="submit">Add Comment</button>
+                    <div id="errorContainer" class="hidden">
+                        <p id="errorMessage">Error</p>
+                        <br>
+                    </div>
+                </form>
+            <% } %>
+            </div>
+            <span>
+                <% if (typeof username !== 'undefined') { %>
+                    <% if (currUsername === username.username){ %>
+                        <form action = <%= deleteurl %> method="POST" id="deleteForm">
+                            <span class="trash">
+                                <input type="image" src="/images/trash.png" id="trashcan">
+                            </span>
+                        </form>
+                    <% } %>
+                <% } %>
+            </span>
+        <hr>
+        <div class="allComments">
+            <% for (const comment of getComments) { %>
+                <div class="oneComment">
+                    <p>
+                        <div id="line1"><%= comment.username %> <span id="date"><%= comment.createdOn %></span></div>
+                        <div class="content"><%= comment.commentText %></div>
+                        <% if (comment.username === currUsername){ %>
+                            <% let commentUrl = "/posts/" + comment.commentID + "/deletecomment" %>
+                            <form id="deleteComment" action= <%=commentUrl%> method="POST">
+                                <button id="delComment">DELETE</button>
+                            </form>
+                        <% } %>
+                    </p>
+                </div>
+            <% } %>
+        </div>
 </body>
 </html>
