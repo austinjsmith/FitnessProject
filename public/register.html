@@ -2,39 +2,47 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/register.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <script src="/js/register.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
 </head>
 <body>
     <nav class="topbar">
-        <a href="viewpost">Forum</a>
+        <a href="/viewpost">Forum</a>
         <a href="#trainer">My Trainer</a>
-        <a href="index.html">Calorie Counter</a>
-        <a href= "meallog">Meal Log</a>
-        <a href= "tdee">Calculator</a>
-        <a href="login.html" class="active">Log In</a>
-        <a href="logout.html">Log Out</a>
+        <a href="/index">Calorie Counter</a>
+        <a href= "/meallog">Meal Log</a>
+        <a href= "/tdee">Calculator</a>
+        <a href="/login" class="active">Log In</a>
+        <a href="/logout">Log Out</a>
     </nav>
 
     <form id="registerForm" action="/register" method="POST">
-        <center>
-            <div class='content'>
-                <img src="weights.png" id="weight-logo"/> 
-                <h3> Create your Account </h3>
-                <div class="email">
-                    <input type="email" name="email" placeholder="Email" required>
-                </div>
-                <div class="username">
-                    <input type="username" name="username" placeholder="username" required>
-                </div>
-                <div class="password">
-                    <input type="password" name="password" placeholder="password" required>
-                </div>
-                <br>
-                <button>Create Account</button>
+        <div class='content' style="text-align: center;">
+            <img src="weights.png" id="weight-logo"/> 
+            <br><br>
+            <h3> Create your Account </h3>
+            <div class="email">
+                <input id="email" type="email" name="email" placeholder="Email">
             </div>
-        </center>
+            <div class="username">
+                <input id="username" type="username" name="username" placeholder="Username">
+            </div>
+            <div class="password">
+                <input id="password" type="password" name="password" placeholder="Password">
+            </div>
+            <br>
+            <button>Create Account</button>
+        </div>
     </form>
+    <div style="text-align: center;">
+        <div id="errorContainer" class="hidden message message-error">
+            <p id="errorMessage">Error</p>
+            <br>
+            <!-- <button id="closeError" onclick="show()">X</button> -->
+        </div>
+    </div>
 </body>
 </html>
