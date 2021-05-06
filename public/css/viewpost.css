@@ -7,53 +7,54 @@ body {
     margin: 0 auto;
 }
 
-.topbar{
-    background-color: #333;
-    overflow: hidden;
-}
 
-.topbar a{
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 18px;
-    border-bottom: 2px solid #333;
-}
-
-.topbar a:hover{
-    border-bottom: 3px solid #cf5f5f;
-} 
-.topbar .active{
-    border-bottom: 3px solid #cf5f5f;
-}
 .titles{
     width: 50%;
     text-align: center;
     margin: 0 auto;
     line-height: 100px;
-    /* border: 2px solid #111; */
 }
 
 .post{
     /* border: 1px solid #111 ;
     border-radius: 2px; */
     height: 100px;
+    line-height: 36px;
 }
 
-#linebreak {
-    background-color: red;
-}
 
 button {
-    background-color: #cf5f5f; 
     border: none;
-    color: white;
+    background-color: #cf5f5f; 
+    color: #f0f0f0;
     padding: 15px 32px;
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
     font-size: 16px;
+}
+
+#noAccount {
+    color: white;
+    background-color: #cf5f5f;
     margin: 0 auto;
+    width: 300px;
+    height: 40px;
+    /* box-shadow: 1px 1px 5px 3px #999999; */
+}
+
+#newpost-button{
+    text-align: none;
+    color: white;
+    text-decoration: none;
+}
+
+#posttitle{
+    text-decoration: none;
+    color: #cf5f5f;
+    text-align: center;
+}
+
+#titlebreak{
+    display: flex;
+    align-items: center;
+    text-align: center;
 }
