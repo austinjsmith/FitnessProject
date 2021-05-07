@@ -1,0 +1,233 @@
+<html>
+<head>
+<title>Adding Client</title>
+</head>
+<body>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        background-image: url('../resources/background.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+    .content{
+        overflow: auto;
+        position: relative;
+    }
+    .content::before{
+        content: "";
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: -1;
+
+        width: 100%;
+        height: 100%;
+    }
+    h1{text-align:center;}
+    .search {
+        width: 200px;
+    }
+    .search a {
+        background-color: #eee;
+        color: black;
+        display: block;
+        padding: 12px;
+    }
+    .search a:hover {
+        background-color: #ccc;
+    }
+    .search a.active {
+        background-color: #94afff;
+        color: white;
+    }
+
+    h2{text-align:center;}
+    .add{
+        width:200px;
+    }
+    .add a {
+        background-color: #eee;
+        color: black;
+        display: block;
+        padding: 12px;
+    }
+    .add a:hover {
+        background-color: #ccc;
+    }
+    .add a.active {
+        background-color: #94afff;
+        color: white;
+    }
+
+    .navbar {
+        overflow: hidden;
+        background-color: #333; 
+        margin-bottom: 15;
+        position: absolute;
+        top: 0;
+    }
+
+    .navbar a {
+        float: left;
+        font-size: 16px;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .subnav {
+        float: left;
+        overflow: hidden;
+    }
+
+    .subnav .subnavbtn {
+        font-size: 16px;  
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: inherit;
+        font-family: inherit;
+        margin: 0;
+    }
+
+    .navbar a:hover, .subnav:hover .subnavbtn {
+        background-color: rgb(255, 84, 84);
+    }
+
+    .subnav-content {
+        display: none;
+        position: fixed;
+        left: 0;
+        background-color: rgb(255, 84, 84);
+        width: 100%;
+        z-index: 1;
+    }
+
+    .subnav-content a {
+        float: left;
+        color: white;
+        text-decoration: none;
+    }
+
+    .subnav-content a:hover {
+        background-color: #eee;
+        color: black;
+    }
+
+    .subnav:hover .subnav-content {
+        display: block;
+    }
+    #logo
+    {
+        position:fixed;
+        top:0;
+        left:0;
+    }
+    table{
+        border-collapse: collapse;
+    }
+    table.center{
+        margin-left:auto;
+        margin-right:auto;
+    }
+    th{
+        background-color: #ff6666;
+        padding:8px;
+        text-align:left;
+    }
+    td{
+        padding:8px;
+        text-align:left;
+        border-bottom: 1px solid #ddd;
+        background-color: #f2f2f2;
+    }
+    tr:hover {background-color: #e1e6f2;}
+    form
+    {
+        text-align: center;
+        color: white;
+    }
+    .center_button
+    {
+        text-align: center;
+    }
+    input[type=text], select {
+        width: 50%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input[type=submit] {
+        width: 50%;
+        background-color: #ff6666;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+    input[type=button] {
+        width:50%;
+        background-color: #ff6666;
+    }
+</style>
+<h1>Welcome, User</h1>
+
+<div class = "navbar">
+    <div class = "subnav">
+        <button class = "subnavbtn">Search Database <i class = "fa fa-caret-down"></i></button>
+        <div class = "subnav-content">
+            <a href="../Search/FindActiveClient.html">Active Clients</a>
+            <a href="../Search/FindClient.html">Clients</a>
+            <a href="../Search/FindTrainers.html">Trainers</a>
+        </div>
+    </div>
+    <div class = "subnav">
+        <button class = "subnavbtn">Add to Database<i class = "fa fa-caret-down"></i></button>
+        <div class = "subnav-content">
+            <!-- <a href="http://localhost:8080/AddClient.php">Clients</a> -->
+            <a href="../Addition/AddTrainer.html">Trainers</a>
+        </div>
+    </div>
+    <div class = "subnav">
+        <button class = "subnavbtn">Delete<i class = "fa fa-caret-down"></i></button>
+        <div class = "subnav-content">
+            <a href="../Deletion/DeleteActiveClient.html">Active Clients</a>
+            <a href="../Deletion/DeleteClient.html">Clients</a>
+            <a href="../Deletion/DeleteTrainer.html">Trainers</a>
+        </div>
+    </div>
+</div>
+<form acton = "/ADD_CLIENT" method = "POST">
+    <tr>
+        <br>
+        <td><input type= text name = 'name' placeholder = "Full Name" /></td>
+        <td><input type= text name = 'is_active' placeholder="Active Client?" /></td>
+        <td><input type= text name = 'height' placeholder = "Height" /></td>
+        <td><input type= text name = 'weight' placeholder = "Weight" /></td>
+        <td><input type= text name = 'address' placeholder = "Address" /></td>
+        <td><input type= text name = 'location' placeholder = "Location" /></td>
+        <td><input type= text name = 'diet' placeholder = "Diet" /></td>
+        <td><input type= text name = 'plan' placeholder = "Plan" /></td>
+        <td><input type = submit name = 's'/> </td>
+    </tr>
+</form>
+<div class = "center_button" id= 'home'>
+    <button onclick = "window.location.href='../main.html';">Back to Home</button>
+</div>
+</body>
+</html>
