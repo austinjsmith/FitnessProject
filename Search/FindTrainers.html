@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Find Client</title>
+<title>Find Trainers</title>
 </head>
 <body>
 <style>
@@ -15,6 +15,7 @@
     .content{
         overflow: auto;
         position: relative;
+        top: 50;
     }
     .content::before{
         content: "";
@@ -26,7 +27,10 @@
         width: 100%;
         height: 100%;
     }
-    h1{text-align:center;}
+    h1{
+        text-align:center;
+        color: white;
+    }
     .search {
         width: 200px;
     }
@@ -68,6 +72,7 @@
         margin-bottom: 15;
         position: absolute;
         top: 0;
+        width: 100%;
     }
 
     .navbar a {
@@ -177,7 +182,6 @@
         cursor: pointer;
     }
 </style>
-<h1>Welcome, User</h1>
 
 <div class = "navbar">
     <div class = "subnav">
@@ -202,13 +206,23 @@
             <a href="../Deletion/DeleteTrainer.html">Trainers</a>
         </div>
     </div>
+    <div class = "subnav">
+        <button class = "subnavbtn">Update Data<i class = "fa fa-caret-down"></i></button>
+        <div class = "subnav-content">
+            <a href="/Update/UpdateClient.html">Clients</a>
+            <a href="/Update/UpdateTrainer.html">Trainers</a>
+        </div>
+    </div>
 </div>
-<form action = "/GET_TRAINER" method = "GET">
-    <input type = text name = 'trainer_name' placeholder="Enter name"> <br>
-    <button type = submit>Submit</button>
-</form>
-<div class = "center_button">
-    <button onclick = "window.location.href='../main.html';">Back to Home</button>
+<div class="content">
+    <h1>Find Trainers</h1>
+    <form action = "/GET_TRAINER" method = "GET">
+        <input type = text name = 'trainer_name' placeholder="Enter name"> <br>
+        <button type = submit>Submit</button>
+    </form>
+    <div class = "center_button">
+        <button onclick = "window.location.href='../main.html';">Back to Home</button>
+    </div>
 </div>
 </body>
 </html>

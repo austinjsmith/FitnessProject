@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Delete Trainer</title>
+<title>Adding Trainer</title>
 </head>
 <body>
 <style>
@@ -29,7 +29,7 @@
     }
     h1{
         text-align:center;
-        color:white;
+        color: white;
     }
     .search {
         width: 200px;
@@ -203,14 +203,14 @@
         <button class = "subnavbtn">Add to Database<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
             <a href="../Addition/AddClient.html">Clients</a>
-            <a href="../Addition/AddTrainer.html">Trainers</a>
+            <!-- <a href="http://localhost:8080/AddTrainer.php">Trainers</a> -->
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Delete<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <!-- <a href="DeleteClient.html">Clients</a> -->
-            <a href="DeleteTrainer.html">Trainers</a>
+            <a href="../Deletion/DeleteClient.html">Clients</a>
+            <a href="../Deletion/DeleteTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
@@ -221,12 +221,16 @@
         </div>
     </div>
 </div>
-<div class = "content">
-    <h1>Delete Trainer. <br> THIS IS PERMANENT.</h1>
-
-    <form action = "/delete_trainer" method = "post">
-        <input type = text name = 'name' placeholder="Enter Client's name">
-        <input type = submit name = "s">
+<div class="content">
+    <h1>Add New Trainer</h1>
+    <form action = '/addition/AddTrainer' method = "POST">
+        <tr>
+            <td><input type= text name = 'name' placeholder = "Full Name" /></td>
+            <td><input type= text name = 'license' placeholder = "License" /></td>
+            <td><input type= text name = 'address' placeholder = "Address" /></td>
+            <td><input type= text name = 'location' placeholder = "Location" /></td>
+            <td><input type = submit name = 's'/> </td>
+        </tr>
     </form>
     <div class = "center_button">
         <button onclick = "window.location.href='../main.html';">Back to Home</button>

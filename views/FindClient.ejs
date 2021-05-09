@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Delete Trainer</title>
+<title>Find Client</title>
 </head>
 <body>
 <style>
@@ -29,7 +29,7 @@
     }
     h1{
         text-align:center;
-        color:white;
+        color: white;
     }
     .search {
         width: 200px;
@@ -133,10 +133,10 @@
         top:0;
         left:0;
     }
-    table{
+    .rows{
         border-collapse: collapse;
     }
-    table.center{
+    .center{
         margin-left:auto;
         margin-right:auto;
     }
@@ -171,7 +171,7 @@
         box-sizing: border-box;
     }
 
-    input[type=submit] {
+    button[type=submit] {
         width: 50%;
         background-color: #ff6666;
         color: white;
@@ -181,36 +181,27 @@
         border-radius: 4px;
         cursor: pointer;
     }
-
-    input[type=submit]:hover {
-        background-color: #45a049;
-    }
-    input[type=button] {
-        width:50%;
-        background-color: #ff6666;
-    }
 </style>
 <div class = "navbar">
     <div class = "subnav">
         <button class = "subnavbtn">Search Database <i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
             <a href="../Search/FindActiveClient.html">Active Clients</a>
-            <a href="../Search/FindClient.html">Clients</a>
-            <a href="../Search/FindTrainers.html">Trainers</a>
+            <a href="./../Search/FindTrainers.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Add to Database<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <a href="../Addition/AddClient.html">Clients</a>
-            <a href="../Addition/AddTrainer.html">Trainers</a>
+            <a href="./../Addition/AddClient.html">Clients</a>
+            <a href="./../Addition/AddTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Delete<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <!-- <a href="DeleteClient.html">Clients</a> -->
-            <a href="DeleteTrainer.html">Trainers</a>
+            <a href="../Deletion/DeleteClient.html">Clients</a>
+            <a href="../Deletion/DeleteTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
@@ -221,16 +212,40 @@
         </div>
     </div>
 </div>
-<div class = "content">
-    <h1>Delete Trainer. <br> THIS IS PERMANENT.</h1>
-
-    <form action = "/delete_trainer" method = "post">
-        <input type = text name = 'name' placeholder="Enter Client's name">
-        <input type = submit name = "s">
+<div class="content">
+    <h1>Find Clients</h1>
+    <form action = "/GET_ACTIVE_CLIENTS" method = "GET">
+        <input type = text name = 'client_name' placeholder="Enter name">
+        <button type = submit>Submit</button>
     </form>
-    <div class = "center_button">
+    <div class = "center_button" id= 'home'>
         <button onclick = "window.location.href='../main.html';">Back to Home</button>
     </div>
+    <br>
+    <table class="center">
+        <tr id="rows">
+            <th>Name</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>Address</th>
+            <th>Location</th>
+            <th>Diet</th>
+            <th>Plan</th>
+        </tr>
+        <tbody>
+            <% for (const client of clients) { %>
+                <tr>
+                    <td><%= client.name %></td>
+                    <td><%= client.height %></td>
+                    <td><%= client.weight %></td>
+                    <td><%= client.address %></td>
+                    <td><%= client.location %></td>
+                    <td><%= client.diet %></td>
+                    <td><%= client.plan %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

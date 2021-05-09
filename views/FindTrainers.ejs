@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Delete Trainer</title>
+<title>Find Trainers</title>
 </head>
 <body>
 <style>
@@ -29,7 +29,7 @@
     }
     h1{
         text-align:center;
-        color:white;
+        color: white;
     }
     .search {
         width: 200px;
@@ -133,10 +133,10 @@
         top:0;
         left:0;
     }
-    table{
+    .rows{
         border-collapse: collapse;
     }
-    table.center{
+    .center{
         margin-left:auto;
         margin-right:auto;
     }
@@ -171,7 +171,7 @@
         box-sizing: border-box;
     }
 
-    input[type=submit] {
+    button[type=submit] {
         width: 50%;
         background-color: #ff6666;
         color: white;
@@ -181,14 +181,6 @@
         border-radius: 4px;
         cursor: pointer;
     }
-
-    input[type=submit]:hover {
-        background-color: #45a049;
-    }
-    input[type=button] {
-        width:50%;
-        background-color: #ff6666;
-    }
 </style>
 <div class = "navbar">
     <div class = "subnav">
@@ -196,7 +188,7 @@
         <div class = "subnav-content">
             <a href="../Search/FindActiveClient.html">Active Clients</a>
             <a href="../Search/FindClient.html">Clients</a>
-            <a href="../Search/FindTrainers.html">Trainers</a>
+            <!-- <a href="http://localhost:8080/FindTrainers.php">Trainers</a> -->
         </div>
     </div>
     <div class = "subnav">
@@ -209,8 +201,8 @@
     <div class = "subnav">
         <button class = "subnavbtn">Delete<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <!-- <a href="DeleteClient.html">Clients</a> -->
-            <a href="DeleteTrainer.html">Trainers</a>
+            <a href="../Deletion/DeleteClient.html">Clients</a>
+            <a href="../Deletion/DeleteTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
@@ -221,16 +213,34 @@
         </div>
     </div>
 </div>
-<div class = "content">
-    <h1>Delete Trainer. <br> THIS IS PERMANENT.</h1>
-
-    <form action = "/delete_trainer" method = "post">
-        <input type = text name = 'name' placeholder="Enter Client's name">
-        <input type = submit name = "s">
+<div class="content">
+    <h1>Find Trainers</h1>
+    <form action = "/GET_TRAINER" method = "GET">
+        <input type = text name = 'trainer_name' placeholder="Enter name"> <br>
+        <button type = submit>Submit</button>
     </form>
     <div class = "center_button">
         <button onclick = "window.location.href='../main.html';">Back to Home</button>
     </div>
+    <br>
+    <table class="center">
+        <tr id="rows">
+            <th>Name</th>
+            <th>License</th>
+            <th>Address</th>
+            <th>Location</th>
+        </tr>
+        <tbody>
+            <% for (const trainer of trainers) { %>
+                <tr>
+                    <td><%= trainer.name %></td>
+                    <td><%= trainer.license %></td>
+                    <td><%= trainer.address %></td>
+                    <td><%= trainer.location %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

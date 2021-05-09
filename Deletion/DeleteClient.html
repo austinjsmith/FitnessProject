@@ -15,6 +15,7 @@
     .content{
         overflow: auto;
         position: relative;
+        top: 50;
     }
     .content::before{
         content: "";
@@ -71,6 +72,7 @@
         margin-bottom: 15;
         position: absolute;
         top: 0;
+        width: 100%;
     }
 
     .navbar a {
@@ -188,7 +190,6 @@
         background-color: #ff6666;
     }
 </style>
-<h1>Delete Client. <br> THIS IS PERMANENT.</h1>
 <div class = "navbar">
     <div class = "subnav">
         <button class = "subnavbtn">Search Database <i class = "fa fa-caret-down"></i></button>
@@ -212,13 +213,24 @@
             <a href="DeleteTrainer.html">Trainers</a>
         </div>
     </div>
+    <div class = "subnav">
+        <button class = "subnavbtn">Update Data<i class = "fa fa-caret-down"></i></button>
+        <div class = "subnav-content">
+            <a href="/Update/UpdateClient.html">Clients</a>
+            <a href="/Update/UpdateTrainer.html">Trainers</a>
+        </div>
+    </div>
 </div>
-<form action = "/DELETE_CLIENT" method = "post">
-    <input type = text name = 'client_name' placeholder="Enter Client's name">
-    <input type = submit name = "s">
-</form>
-<div class = "center_button">
-    <button onclick = "window.location.href='../main.html';">Back to Home</button>
+<div class = "content">
+    <h1>Delete T. <br> THIS IS PERMANENT.</h1>
+
+    <form action = "/delete_client" method = "post">
+        <input type = text name = 'name' placeholder="Enter Client's name">
+        <input type = submit name = "s">
+    </form>
+    <div class = "center_button">
+        <button onclick = "window.location.href='../main.html';">Back to Home</button>
+    </div>
 </div>
 </body>
 </html>

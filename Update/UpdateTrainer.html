@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>Delete Trainer</title>
+<title>Update Trainer Information</title>
 </head>
 <body>
 <style>
@@ -29,7 +30,7 @@
     }
     h1{
         text-align:center;
-        color:white;
+        color: white;
     }
     .search {
         width: 200px;
@@ -194,43 +195,49 @@
     <div class = "subnav">
         <button class = "subnavbtn">Search Database <i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <a href="../Search/FindActiveClient.html">Active Clients</a>
-            <a href="../Search/FindClient.html">Clients</a>
-            <a href="../Search/FindTrainers.html">Trainers</a>
+            <a href="/Search/FindActiveClient.html">Active Clients</a>
+            <a href="/Search/FindClient.html">Clients</a>
+            <a href="/Search/FindTrainers.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Add to Database<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <a href="../Addition/AddClient.html">Clients</a>
-            <a href="../Addition/AddTrainer.html">Trainers</a>
+            <a href="/Addition/AddClient.html">Clients</a>
+            <a href="/Addition/AddTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Delete<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <!-- <a href="DeleteClient.html">Clients</a> -->
-            <a href="DeleteTrainer.html">Trainers</a>
+            <a href="/Deletion/DeleteClient.html">Client</a>
+            <a href="/Deletion/DeleteTrainer.html">Trainers</a>
         </div>
     </div>
     <div class = "subnav">
         <button class = "subnavbtn">Update Data<i class = "fa fa-caret-down"></i></button>
         <div class = "subnav-content">
-            <a href="/Update/UpdateClient.html">Clients</a>
-            <a href="/Update/UpdateTrainer.html">Trainers</a>
+            <!-- <a href="/Update/UpdateClient.html">Clients</a> -->
+            <a href="./UpdateClient.html">Clients</a>
         </div>
     </div>
 </div>
-<div class = "content">
-    <h1>Delete Trainer. <br> THIS IS PERMANENT.</h1>
-
-    <form action = "/delete_trainer" method = "post">
-        <input type = text name = 'name' placeholder="Enter Client's name">
-        <input type = submit name = "s">
+<br>
+<br>
+<div class = main>
+    <h1>Update Existing Trainer</h1>
+    <form action = "/update_trainer" method = "POST">
+        <tr>
+            <td><input type= text name = 'name' placeholder = "Trainer to change" /></td>
+            <td><input type= text name = 'license' placeholder="License Number" /></td>
+            <td><input type= text name = 'address' placeholder = "Address" /></td>
+            <td><input type= text name = 'location' placeholder = "Location" /></td>
+            <br>
+            <td><input type = submit name = 's'/> </td>
+        </tr>
     </form>
-    <div class = "center_button">
-        <button onclick = "window.location.href='../main.html';">Back to Home</button>
-    </div>
 </div>
-</body>
-</html>
+<br>
+<div class = "center_button">
+    <button onclick = "window.location.href='../main.html';">Back to Home</button>
+</div>

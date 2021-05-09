@@ -5,10 +5,12 @@ const express = require("express");
 const Joi = require('joi');
 const redis = require("redis");
 const session = require("express-session");
+const ejs = require('ejs');
 
 const app = express();
 const path = require("path");
 const {schemas, VALIDATION_OPTIONS} = require("./validators/allValidators")
+
 
 // Don't forget to configure your environement file
 require("dotenv").config();
@@ -43,15 +45,11 @@ redisClient.on('error', function (err) {
 app.use(express.json());
 app.use(express.urlencoded( {extended: false} ));
 app.use(session(sessionConfig));
+app.set('view engine','ejs');
 
-const PORT = 8000;
 
-const Database = require('better-sqlite3');
-const db = new Database('./Database/ClientTrainer.db');
-
-const tablesInit = 'CREATE TABLE IF NOT EXISTS clients (name TEXT PRIMARY KEY, is_active INTEGER, height TEXT, weight TEXT, address TEXT, location TEXT, diet TEXT, plan TEXT); CREATE TABLE IF NOT EXISTS trainers (name TEXT PRIMARY KEY, license, address TEXT, location TEXT)';
-db.exec(tablesInit);
-
+const {client_model} = require("./Models/ClientModel");
+const {trainer_model} = require("./Models/TrainerModel")
 
 app.use(express.static(path.join(__dirname, "public"), {
     extensions: ['html'],
@@ -68,129 +66,25 @@ app.get('/', (req, res) => {
 // Search active clients
 app.use(express.static(path.join(__dirname)))
 app.get('/get_active_clients', (req, res) => {
-    console.log("Trying to retrieve active client(s) info from DB");
-    // if (err) throw err;
 
     const name = req.query;
     console.log(req.query);
-    const {error, result} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
+    const {value, error} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
 
     if (error) {
-        console.log(error.details);
-        return res.status(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
     else {
-        const client_name = name.client_name;
-        if (client_name == "Show all")
-        {
-
-            try{
-                const sql = 'SELECT * FROM clients WHERE is_active = 1';
-                console.log("Showing all");
-                
-                let client = db.prepare(sql).all();
-                console.log(client);
-                if (client.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>Height</th><th>Weight</th><th>Address</th><th>Location</th><th>Diet</th><th>Plan</th></tr>';
-
-                    // create table
-                    for (let i = 0; i < client.length; ++i){
-                        table +='</td><td>' 
-                        + client[i].name + '</td><td>' 
-                        + client[i].height + '</td><td>' 
-                        + client[i].weight + '</td><td>' 
-                        + client[i].address + '</td><td>' 
-                        + client[i].location + '</td><td>' 
-                        + client[i].diet + '</td><td>' 
-                        + client[i].plan + '</td></tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    res.sendStatus(404);
-            } catch (err) {
-                console.error(err);
-                return [];
-            }
-        }
-        else
-        {
-            try{
-                const sql = 'SELECT * FROM clients WHERE name = @client_name AND is_active = 1';
-
-                let client = db.prepare(sql).all({client_name});
-                console.log(client);
-                if (client.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>Height</th><th>Weight</th><th>Address</th><th>Location</th><th>Diet</th><th>Plan</th></tr>';
-
-                    // create table
-                    for (let i = 0; i < client.length; ++i){
-                        table +='</td><td>' 
-                        + client[i].name + '</td><td>' 
-                        + client[i].height + '</td><td>' 
-                        + client[i].weight + '</td><td>' 
-                        + client[i].address + '</td><td>' 
-                        + client[i].location + '</td><td>' 
-                        + client[i].diet + '</td><td>' 
-                        + client[i].plan + '</td></tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    res.sendStatus(404);
-                // stmt.run(name);
-            } catch (err) {
-                console.error(err);
-                return [];
-            }
-        }
-    }
-});
-
-// Search all clients
-app.use(express.static(path.join(__dirname)))
-app.get('/get_client', (req, res) => {
-    console.log("Trying to retrieve client(s) info from DB");
-
-    const name = req.query;
-    console.log(req.query);
-    const {error, result} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
-
-    if (error) {
-        console.log(error.details);
-        return res.status(400);
-    }
-    else {
-        console.log('name: ' + name.client_name);
-        const client_name = name.client_name;
+        const client_name = value.client_name;
         
         if (client_name == "Show all")
         {
 
             try{
-                const sql = 'SELECT * FROM clients';
-                console.log("Showing all");
-                
-                let client = db.prepare(sql).all();
-                console.log(client);
-                if (client.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>Height</th><th>Weight</th><th>Health</th><th>Location</th><th>Diet</th><th>Plan</th></tr>';
-
-                    // create table
-                    for (let i = 0; i < client.length; ++i){
-                        table +='</td><td>' 
-                        + client[i].name + '</td><td>' 
-                        + client[i].height + '</td><td>' 
-                        + client[i].weight + '</td><td>' 
-                        + client[i].address + '</td><td>' 
-                        + client[i].location + '</td><td>' 
-                        + client[i].diet + '</td><td>' 
-                        + client[i].plan + '</td></tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    return res.sendStatus(404);
+                let clients = client_model.get_all_active_clients();
+                res.render('FindActiveClient', {clients});
             } catch (err) {
                 console.error(err);
                 return err;
@@ -199,29 +93,47 @@ app.get('/get_client', (req, res) => {
         else
         {
             try{
-                const sql = 'SELECT * FROM clients WHERE name = @client_name';
+                let clients = client_model.get_active_client(client_name);
+                res.render('FindActiveClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+    }
+});
 
-                let client = db.prepare(sql).all({client_name});
-                console.log(client);
-                if (client.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>Height</th><th>Weight</th><th>Health</th><th>Location</th><th>Diet</th><th>Plan</th></tr>';
+// Search all clients
+app.use(express.static(path.join(__dirname)))
+app.get('/get_client', (req, res) => {
+    const {value, error} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
 
-                    // create table
-                    for (let i = 0; i < client.length; ++i){
-                        table +='</td><td>' 
-                        + client[i].name + '</td><td>' 
-                        + client[i].height + '</td><td>' 
-                        + client[i].weight + '</td><td>' 
-                        + client[i].address + '</td><td>' 
-                        + client[i].location + '</td><td>' 
-                        + client[i].diet + '</td><td>' 
-                        + client[i].plan + '</td></tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    return res.sendStatus(404);
-                // stmt.run(name);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    else {
+        const client_name = value.client_name;
+
+        if (client_name == "Show all")
+        {
+
+            try{
+                let clients = client_model.get_all_clients();
+                console.log(clients);
+                res.render('FindClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+        else
+        {
+            try{
+                let clients = client_model.get_client(client_name);
+                console.log(clients);
+                res.render('FindClient', {clients});
             } catch (err) {
                 console.error(err);
                 return err;
@@ -232,44 +144,22 @@ app.get('/get_client', (req, res) => {
 
 app.use(express.static(path.join(__dirname)));
 app.get('/get_trainer', (req, res) => {
-    console.log("Trying to retrieve trainer(s) info from DB");
-    // if (err) throw err;
-
-    // // let name = document.getElementById("client_name");
-    let name = req.query;
-    console.log(req.query);
-    const {error, result} = schemas.getTrainers.validate(req.query, VALIDATION_OPTIONS);
+    
+    const {value, error} = schemas.getTrainers.validate(req.query, VALIDATION_OPTIONS);
 
     if (error) {
-        console.log(error.details);
-        return res.status(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
     else{
-        const trainer_name = name.trainer_name;
+        const trainer_name = value.trainer_name;
         if (trainer_name == "Show all")
         {
 
             try{
-                const sql = 'SELECT * FROM trainers';
-                console.log("Showing all");
-                
-                let trainers = db.prepare(sql).all();
-                console.log(trainers);
-                if (trainers.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>License</th><th>Address</th><th>Location</th></tr>';
-
-                    // create table
-                    for (let i = 0; i < trainers.length; ++i){
-                        table +='</td><td>' 
-                        + trainers[i].name + '</td><td>' 
-                        + trainers[i].license + '</td><td>' 
-                        + trainers[i].address + '</td><td>' 
-                        + trainers[i].location + '</td><tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    res.sendStatus(404);
+                let trainers = trainer_model.get_all_trainers();
+                res.render('FindTrainers', {trainers});
             } catch (err) {
                 console.error(err);
                 return [];
@@ -278,26 +168,9 @@ app.get('/get_trainer', (req, res) => {
         else
         {
             try{
-                const sql = 'SELECT * FROM trainers WHERE name = @trainer_name';
 
-                let trainers = db.prepare(sql).all({trainer_name});
-                console.log(trainers);
-                if (trainers.length > 0){
-                    var table = '<table border = "1"><tr><th>Name</th><th>License</th><th>Address</th><th>Location</th></tr>';
-
-                    // create table
-                    for (let i = 0; i < trainers.length; ++i){
-                        table +='</td><td>' 
-                        + trainers[i].name + '</td><td>' 
-                        + trainers[i].license + '</td><td>' 
-                        + trainers[i].address + '</td><td>' 
-                        + trainers[i].location + '</td><tr>';
-                    }
-                    return res.send(table);
-                }
-                else
-                    res.sendStatus(404);
-                // stmt.run(name);
+                let trainers = trainer_model.get_trainer(trainer_name);
+                res.render('FindTrainers', {trainers});
             } catch (err) {
                 console.error(err);
                 return [];
@@ -310,16 +183,16 @@ app.get('/get_trainer', (req, res) => {
  *  ADDITION IMPLEMENTATION BELOW
  */
 app.use(express.static(path.join(__dirname, "addition")));
-app.post('/addition/AddClient.html', (req, res) => {
+app.post('/addition/AddClient', (req, res) => {
     console.log("POST /clients");
 
-    let {name, is_active, height, weight, address, location, diet, plan} = req.body;
-    console.log(req.body);
-    const {error, result} = schemas.addClients.validate(req.body, VALIDATION_OPTIONS);
+    const {value, error} = schemas.addClients.validate(req.body, VALIDATION_OPTIONS);
     if (error) {
-        console.log(error.details);
-        return res.sendStatus(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
+    let is_active = value.is_active.toLowerCase();
 
     if (is_active == 'yes'){
         is_active = 1;
@@ -328,38 +201,47 @@ app.post('/addition/AddClient.html', (req, res) => {
     } else {
         return res.send("Incomplete/invalid entry");
     }
-    console.log('is_active: ' + is_active);
-
     try {
-        const sql = 'INSERT INTO clients (name, is_active, height, weight, address, location, diet, plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        const stmt = db.prepare(sql);
-        stmt.run(name, is_active, height, weight, address, location, diet, plan);
+        const insert = client_model.add_client({
+            name: value.name,
+            is_active: value.is_active,
+            height: value.height,
+            weight: value.weight,
+            address: value.address,
+            location: value.location,
+            diet: value.diet,
+            plan: value.plan
+        });
 
-        return res.redirect('../main.html');
+        if (insert === true)
+            return res.redirect('../main.html');
     } catch (err) {
         res.sendStatus(500);
         console.error(err);
         return [];
     }
-
 });
+
 app.use(express.static(path.join(__dirname, "addition")));
-app.post('/addition/AddTrainer.html', (req, res) => {
+app.post('/addition/AddTrainer', (req, res) => {
     console.log("POST /trainers");
 
-    let {name, license, address, location} = req.body;
-    console.log(req.body);
-    const {error, result} = schemas.addTrainers.validate(req.body, VALIDATION_OPTIONS);
+    const {value, error} = schemas.addTrainers.validate(req.body, VALIDATION_OPTIONS);
     if (error) {
-        console.log(error.details);
-        return res.sendStatus(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
     try {
-        const sql = 'INSERT INTO trainers (name, license, address, location) VALUES (?, ?, ?, ?)';
-        const stmt = db.prepare(sql);
-        stmt.run(name, license, address, location);
+        const insert = trainer_model.add_trainer({
+            name: value.name,
+            license: value.license,
+            address: value.address,
+            location: value.location
+        });
 
-        return res.redirect('../main.html');
+        if (insert === true)
+            return res.redirect('../main.html');
     } catch (err) {
         res.sendStatus(500);
         console.error(err);
@@ -373,21 +255,21 @@ app.post('/addition/AddTrainer.html', (req, res) => {
 app.use(express.static(path.join(__dirname, "deletion")));
 app.post('/delete_client', (req, res) => {
     // let name = req.body.delete_client_name;
-    console.log(req.body);
-    const {error, result} = schemas.deleteClients.validate(req.body, VALIDATION_OPTIONS);
+    const {value, error} = schemas.deleteClients.validate(req.body, VALIDATION_OPTIONS);
 
     if (error) {
-        console.log(error.details);
-        return res.status(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
-    const name = req.body.client_name;
-    console.log("Deleting " + name);
+    const name = value.name;
+    console.log(name);
 
     try {
-        const sql = 'DELETE FROM clients WHERE name = @name';
-        db.prepare(sql).run({name});
+        client_model.delete_client(name);
+        console.log("Done redirecting...");
 
-        return res.redirect('../main.html');
+        return res.redirect('../Search/FindClient.html');
     } catch (err) {
         res.sendStatus(500);
         console.error(err);
@@ -398,19 +280,17 @@ app.post('/delete_client', (req, res) => {
 app.use(express.static(path.join(__dirname, "deletion")));
 app.post('/delete_trainer', (req, res) => {
     console.log(req.body);
-    const {error, result} = schemas.deleteTrainers.validate(req.body, VALIDATION_OPTIONS);
+    const {value, error} = schemas.deleteTrainers.validate(req.body, VALIDATION_OPTIONS);
 
     if (error) {
-        console.log(error.details);
-        return res.status(400);
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
     }
-    const name = req.body.trainer_name;
-    console.log("Deleting " + name);
+    const name = value.name;
 
     try {
-        const sql = 'DELETE FROM trainers WHERE name = @name';
-        db.prepare(sql).run({name});
-
+        trainer_model.delete_trainer(name);
         return res.redirect('../main.html');
     } catch (err) {
         res.sendStatus(500);
@@ -424,8 +304,94 @@ app.post('/delete_trainer', (req, res) => {
  */
 app.use(express.static(path.join(__dirname, "update")));
 app.post('/update_client', (req, res) => {
-    let {name, is_active, height, weight, address, location, diet, plan} = req.body;
-    console.log(req.body);
+    // let {name, is_active, height, weight, address, location, diet, plan} = req.body;
+
+    const {value, error} = schemas.updateClients.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    let name = value.name;
+    let is_active = value.is_active.toLowerCase();
+    let height = value.height;
+    let weight = value.weight;
+    let address = value.address;
+    let location = value.location;
+    let diet = value.diet;
+    let plan = value.plan;
+
+    try{
+        if (name){
+            if (is_active){
+                if (is_active == 'yes'){
+                    is_active = 1;
+                } else if (is_active == 'no'){
+                    is_active = 0;
+                }
+
+                client_model.update_is_active(name, is_active);
+            }
+            if (height){
+                client_model.update_height(name, height);
+            }
+            if (weight){
+                client_model.update_weight(name, weight);
+            }
+            if (address){
+                client_model.update_address(name, address);
+            }
+            if (location){
+                client_model.update_location(name, location);
+            }
+            if (diet){
+                client_model.update_diet(name, diet);
+            }
+            if (plan){
+                client_model.update_plan(name, plan);
+            }
+            return res.redirect('../main.html');
+        }
+    } catch(err) {
+        res.sendStatus(500);
+        console.log(err);
+        return [];
+    }
+});
+
+app.use(express.static(path.join(__dirname, "update")));
+app.post('/update_trainer', (req, res) => {
+    // let {name, is_active, height, weight, address, location, diet, plan} = req.body;
+
+    const {value, error} = schemas.updateTrainers.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    let name = value.name;
+    let license = value.license;
+    let address = value.address;
+    let location = value.location;
+
+    try{
+        if (name){
+            if (license){
+                trainer_model.update_license(name, license);
+            }
+            if (address){
+                trainer_model.update_address(name, address);
+            }
+            if (location){
+                trainer_model.update_location(name, location);
+            }
+            return res.redirect('../main.html');
+        }
+    } catch(err) {
+        res.sendStatus(500);
+        console.log(err);
+        return [];
+    }
 });
 app.listen(process.env.PORT, () => {
 	// Colorize output with ANSI escape codes

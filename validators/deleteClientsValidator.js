@@ -2,5 +2,5 @@
 const Joi = require('joi');
 
 exports.deleteClients = Joi.object({
-    client_name: Joi.string().required()
+    name: Joi.string().required()
 });

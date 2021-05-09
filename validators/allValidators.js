@@ -15,7 +15,8 @@ const {addClients} = require("./addClientsValidator");
 const {addTrainers} = require("./addTrainersValidator");
 const {deleteClients} = require("./deleteClientsValidator");
 const {deleteTrainers} = require("./deleteTrainersValidator");
-
+const {updateClients} = require("./updateClientsValidator");
+const {updateTrainers} = require("./updateTrainerValidator");
 
 const schemas = {
     getClients,
@@ -23,7 +24,9 @@ const schemas = {
     addClients,
     addTrainers,
     deleteClients,
-    deleteTrainers
+    deleteTrainers,
+    updateClients,
+    updateTrainers
 };
 
 exports.schemas = schemas;
