@@ -3,19 +3,14 @@
 <head>
     <link rel="stylesheet" href="/css/tdee.css">
     <link rel="stylesheet" href="/css/navbar.css">
-    <script src="/js/tdee.js" defer></script>
+    <script src="/js/CalCountJS/tdee.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TDEE Calculator</title>
 </head>
 <body>
     <nav class="topbar">
-        <a href="/viewpost">Forum</a>
-        <a href="#trainer">My Trainer</a>
-        <a href="/index">Calorie Counter</a>
-        <a href= "/meallog">Meal Log</a>
-        <a href= "/tdee" class="active">Calculator</a>
-        <a href="/login">Log In</a>
+       <%- include ('navbar.ejs') %>
     </nav>
     
     <form id="tdeeForm" action="/counter" method="POST">
@@ -31,6 +26,11 @@
                 <%= t.tdee %>
             <% } %>
 
+        </p>
+        <p id="description">Your TDEE is your total daily energy expenditure. This is the amount of calories you 
+            burn each day. <br><br> This is calculated using the  Mifflin-St Jeor formula.<br><br> If you want to gain weight, 
+            you have to eat over your TDEE. To lose weight, you eat under this number. Find out how many
+            calories you need to consume below!
         </p>
         <hr>
         <div>
@@ -48,7 +48,7 @@
         <div>
             <label for="gender"> Select Your Gender</label>
             <br>
-            <select name ="gender" id="gender" onchange="toggle(this.value);">
+            <select name ="gender" id="gender">
                 <option value="female">Female</option>
                 <option value="male">Male</option>
             </select>
@@ -127,10 +127,10 @@
         
     </form>
     <div style="text-align: center;">
-        <div id="errorContainer" class="hidden">
+        <div id="errorContainer" class="hidden message message-error">
             <p id="errorMessage">Error</p>
             <br>
-            <button id="closeError" onclick="show()">Close</button>
+            <button id="closeError" onclick="show()">X</button>
         </div>
     </div>
 </body>

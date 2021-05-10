@@ -3,29 +3,21 @@
 <head>
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/navbar.css">
-    <script src="/js/login.js" defer></script>
+    <script src="/js/CalCountJS/login.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
 <body>
-    <nav class="topbar">
-        <a href="/viewpost">Forum</a>
-        <a href="#trainer">My Trainer</a>
-        <a href="/index">Calorie Counter</a>
-        <a href= "/meallog">Meal Log</a>
-        <a href= "/tdee">Calculator</a>
-        <a href="/login" class="active">Log In</a>
-        <% if (typeof isLogged !== 'undefined' && isLogged === 1){ %>
-            <a href="/logout">Log Out</a>
-        <% } %>
+    <nav class="topbar"> 
+        <%-include ('navbar.ejs') %>
     </nav>
 
     <div class='content'>
         <div style="text-align: center;">
-            <img src="weights.png" id="weight-logo"/> 
+            <img src="/images/weights.png" id="weight-logo"/> 
             <h1 id="name">FITNESS <br> <span id="team"> TEAM </span></h1>
-            <p id="description">Login or <a href="register" id="reg">create an account!</a></p>
+            <p id="description">Login or <a href="/CalCountPages/register" id="reg">create an account!</a></p>
             <form id="loginForm" action="/login" method="POST">
                 <div class="email">
                     <input id="email" type="email" name="email" placeholder="Email" required>

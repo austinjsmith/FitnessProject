@@ -5,36 +5,24 @@
     <link rel="stylesheet" href="/css/navbar.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/js/showpost.js" defer></script>
+    <script src="/js/CalCountJS/showpost.js" defer></script>
     <title>Show Post</title>
 </head>
 <body>
     <nav class="topbar">
-        <a href="/viewpost" class="active">Forum</a>
-        <a href="#trainer">My Trainer</a>
-        <a href="/index">Calorie Counter</a>
-        <a href= "/meallog">Meal Log</a>
-        <a href= "/tdee">Calculator</a>
-        <a href="/login">Log In</a>
+       <%- include ('navbar.ejs')%>
     </nav>
-   
         <div class="postdata">
             <div class="heading">
                 <h4> Title: <%= getPost.title %>  
-                <!-- delete this, just for testing purposes. the constraints on the user model wont allow for this -->
-                <% if (typeof username !== 'undefined') { %>
-                    <div id="username"> <%= username.username%> <%=getPost.createdOn%></div>
-                <% } %>
-                <!-- end of delete -->
-                
+                <div id="username"> 
+                    <%= username.username%> <%=getPost.createdOn%>
+                </div>
                 </h4>
             </div>
             <% let deleteurl = "/posts/" + getPost.postid + "/delete"; %>
-            <!-- <div style="display: none;" id="postid"><%= getPost.postid %></div> -->
             <div>
-
-          
-            <p id="postText" style="line-height: 40px;"><%= getPost.postText %></p>
+            <p id="postText"><%= getPost.postText %></p>
             <% let url = "/posts/" + getPost.postid + "/comments"; %>
             <% if (loggedIn === 1){ %>
                 <form id="commentForm" action = <%= url %> method="POST">
@@ -68,7 +56,7 @@
                         <% if (comment.username === currUsername){ %>
                             <% let commentUrl = "/posts/" + comment.commentID + "/deletecomment" %>
                             <form id="deleteComment" action= <%=commentUrl%> method="POST">
-                                <button id="delComment">DELETE</button>
+                                <button id="delComment" onclick="submitDelete();">DELETE</button>
                             </form>
                         <% } %>
                     </p>

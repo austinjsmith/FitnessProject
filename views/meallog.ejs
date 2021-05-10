@@ -9,12 +9,7 @@
 </head>
 <body>
     <nav class="topbar">
-        <a href="/viewpost">Forum</a>
-        <a href="#trainer">My Trainer</a>
-        <a href="/index">Calorie Counter</a>
-        <a href= "/meallog" class="active">Meal Log</a>
-        <a href= "/tdee">Calculator</a>
-        <a href="/login">Log In</a>
+       <%-include ('navbar.ejs') %>
     </nav>
     <h3 class="date">TODAY'S DATE: <%= showDate%></h3>
     <table>
