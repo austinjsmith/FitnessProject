@@ -3,7 +3,7 @@
 <head>
     <link rel="stylesheet" href="/css/register.css">
     <link rel="stylesheet" href="/css/navbar.css">
-    <script src="/js/register.js" defer></script>
+    <script src="/js/CalCountJS/register.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
@@ -15,13 +15,11 @@
         <a href="/index">Calorie Counter</a>
         <a href= "/meallog">Meal Log</a>
         <a href= "/tdee">Calculator</a>
-        <a href="/login" class="active">Log In</a>
-        <a href="/logout">Log Out</a>
     </nav>
 
     <form id="registerForm" action="/register" method="POST">
         <div class='content' style="text-align: center;">
-            <img src="weights.png" id="weight-logo"/> 
+            <img src="/images/weights.png" id="weight-logo"/> 
             <br><br>
             <h3> Create your Account </h3>
             <div class="email">
@@ -32,6 +30,9 @@
             </div>
             <div class="password">
                 <input id="password" type="password" name="password" placeholder="Password">
+            </div>
+            <div class="confirm_password">
+                <input id="confirm_password"  type="password" name="confirm_password" placeholder="Confirm Password">
             </div>
             <br>
             <button>Create Account</button>
