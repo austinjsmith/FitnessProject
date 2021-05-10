@@ -3,7 +3,6 @@
 //configure the envioronment file
 require("dotenv").config();
 
-
 //for server, set to production, otherwise, set to development
 const isDevelopement = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 const isProduction = process.env.NODE_ENV === "production";
@@ -17,7 +16,7 @@ const redis = require("redis");
 const session = require("express-session");
 const ejs = require("ejs");
 const helmet = require("helmet");
-const calTdee = require ("./public/js/calculate");
+const calTdee = require ("./public/js/CalCountJS/calculate");
 const {schemas, VALIDATION_OPTIONS} = require("./validators/allValidators");
 
 if (isProduction) {
@@ -48,11 +47,13 @@ redisClient.on("error", function (err) {
     console.log("error" + err);
 });
 
-const {mealModel} = require("./Models/mealModel");
-const {tdeeModel} = require("./Models/tdeeModel");
-const {userModel} = require("./Models/userModel");
-const {postModel} = require("./Models/postModel");
-const {commentModel} = require("./Models/commentModel");
+const {mealModel} = require("./Models/CalorieCounter/mealModel");
+const {tdeeModel} = require("./Models/CalorieCounter/tdeeModel");
+const {userModel} = require("./Models/CalorieCounter/userModel");
+const {postModel} = require("./Models/CalorieCounter/postModel");
+const {commentModel} = require("./Models/CalorieCounter/commentModel");
+const {client_model} = require("./Models/ClientTrainer/clientModel");
+const {trainer_model} = require("./Models/ClientTrainer/TrainerModel");
 
 app.use(express.static(path.join(__dirname, "public"), {
     extensions: ['html'],
@@ -61,18 +62,117 @@ app.use(express.json());
 app.use(express.urlencoded ({extended: true}));
 app.use(session(sessionConfig));
 
+app.get('/get_active_clients', (req, res) => {
+
+    const name = req.query;
+    console.log(req.query);
+    const {value, error} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
+
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    else {
+        const client_name = value.client_name;
+        
+        if (client_name == "Show all")
+        {
+
+            try{
+                let clients = client_model.get_all_active_clients();
+                res.render('FindActiveClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+        else
+        {
+            try{
+                let clients = client_model.get_active_client(client_name);
+                res.render('FindActiveClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+    }
+});
+
+// app.get('/FindActiveClient', (req, res) =>{
+//     res.render('FindActiveClient');
+// });
+
+app.post('/addition/AddClient', (req, res) => {
+    console.log("POST /clients");
+
+    console.log(req.body);
+    const {value, error} = schemas.addClients.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        console.log(error.details);
+        return res.sendStatus(400);
+    }
+    let is_active = req.body.is_active;
+
+    if (is_active == "yes"){
+        is_active = 1;
+    } else if (is_active == "no"){
+        is_active = 0;
+    } else {
+        return res.send("Incomplete/invalid entry");
+    }
+    console.log('is_active: ' + is_active);
+
+    try {
+        const insert = client_model.add_client({
+            name: value.name,
+            is_active: is_active,
+            height: value.height,
+            weight: value.weight,
+            address: value.address,
+            location: value.location,
+            diet: value.diet,
+            plan: value.plan
+        });
+
+        if (insert){
+            return res.redirect('/ClientTrackerPages/main');
+        }
+    } catch (err) {
+        res.sendStatus(500);
+        console.error(err);
+    }
+
+});
+
 app.get("/login", (req, res) =>{
-    res.render('login', {isLogged: req.session.isLoggedIn});
+    const isLogged = req.session.isLoggedIn;
+    const isAdmin = req.session.role;
+
+    //if user is logged in, only allow log out
+    if (isLogged === 1){
+        res.redirect('/CalCountPages/logout');
+    } else {
+        //if user is not logged in, allow them to login only
+        res.render('login', {isLogged, isAdmin});
+    }   
 });
 
 app.get("/", (req, res) => {
-    res.redirect('/login');
+    if (req.session.isLoggedIn){
+        res.redirect('/index'); 
+    } else {
+        res.redirect('/login');
+    }
+    
 })
 
 //create a new account
 app.post("/register", async (req, res) =>{
-	console.log("POST /users");
+    console.log("POST /users");
     const {value, error} = schemas.postUsersSchema.validate(req.body, VALIDATION_OPTIONS);
+    console.log(value);
     if (error){
         const errorMessages = error.details.map( error => error.message );
         return res.status(400).json(errorMessages);
@@ -128,11 +228,12 @@ app.post("/login", async (req, res) => {
                         req.session.username = user.username;
                         req.session.isLoggedIn = 1;
 
-                        //check if admin
-                        // if (email.includes(process.env.ADMIN) ){
-                        //     res.redirect(TO AUSTINS SIDE OF THE WEBSITE)
-                        // } ELSE REDIRECT TO INDEX
-                        return res.redirect('index');
+                        if (email.includes(process.env.ADMIN) ){
+                            req.session.role = 1;
+                            res.redirect('/ClientTrackerPages/main');
+                        } else {
+                            return res.redirect('/index');
+                        }
                     }
                 });
             } else {
@@ -198,10 +299,12 @@ app.post("/calories", (req, res) => {
 
 app.get("/index", (req,res) =>{
     try{
-        if(req.session.isLoggedIn !==  1){
-            return res.render('login');
+        const isAdmin = req.session.role;
+        const isLogged = req.session.isLoggedIn;
+        if(isLogged !==  1){
+            res.redirect('/login');
         } else {
-            res.render('index');
+            res.render('index', {isAdmin});
         } 
     } catch (err) {
         console.error(err);
@@ -213,7 +316,7 @@ app.get("/index", (req,res) =>{
 app.get('/meallog', (req, res) => {
     let todaydate = new Date();
     let month = todaydate.getUTCMonth() + 1;
-    let day = todaydate.getUTCDate();
+    let day = todaydate.getDate();
     let year = todaydate.getUTCFullYear();
     let todaysdate = `${year}/${month}/${day}`;
     let showDate = `${month}/${day}/${year}`;
@@ -221,12 +324,13 @@ app.get('/meallog', (req, res) => {
     const meal2 = mealModel.getTodaysMeals(req.session.userID, todaysdate);
     const tdeeW = tdeeModel.getTDEE(req.session.userID);
     const loggedIn = req.session.isLoggedIn;
-    
+    const isAdmin = req.session.role;
     //if user is not logged in, send to the login page
     if (loggedIn !== 1){
-        res.render('login');
+        res.redirect('/login');
     } else {
-        res.render('meallog', {meal2, loggedIn, tdeeW, showDate});
+        const isAdmin = req.session.role;
+        res.render('meallog', {meal2, loggedIn, tdeeW, showDate, isAdmin});
     }
 });
 
@@ -298,15 +402,16 @@ app.post("/counter", (req, res) =>{
 
 app.get('/tdee', (req,res) => {
     const userid = req.session.userID;
+    const isLogged = req.session.isLoggedIn;
+    const isAdmin = req.session.role;
     let t, gen;
     try{
         //if user is not logged in, send to the login page
         if (req.session.isLoggedIn !== 1){
-            return res.redirect('login');
+            return res.redirect('/login');
         } else if ( req.session.isLoggedIn === 1 ){
             t = tdeeModel.getTDEE(userid);
-
-            res.render('tdee', {t, loggedIn: req.session.isLoggedIn});
+            res.render('tdee', {t, loggedIn: req.session.isLoggedIn, isAdmin});
         }
     } catch (err) {
         console.error(err);
@@ -347,7 +452,8 @@ app.post('/newpost', (req,res) => {
 
 app.get("/newpost", (req, res) => {
     if (req.session.isLoggedIn){
-        res.render('newpost');
+        const isAdmin = req.session.role;
+        res.render('newpost', {isAdmin});
     } else {
         return res.sendStatus(500);
     }
@@ -357,7 +463,8 @@ app.get("/viewpost", (req,res) => {
     try{
         const allPosts = postModel.getAllPostData();
         const loggedIn = req.session.isLoggedIn;
-        res.render('viewpost', {allPosts, loggedIn});
+        const isAdmin = req.session.role;
+        res.render('viewpost', {allPosts, loggedIn, isAdmin});
     } catch (err) {
         console.error(err);
         return res.sendStatus(500);
@@ -377,8 +484,9 @@ app.get("/posts/:postid", (req, res) =>{
         }
        
         const currUsername = req.session.username;
+        const isAdmin = req.session.role;
         if (getPost){
-            res.render('showpost', {getPost, getComments, loggedIn, username, currUsername});
+            res.render('showpost', {getPost, getComments, loggedIn, username, currUsername, isAdmin});
         } else {
             return res.sendStatus(500);
         }
@@ -434,6 +542,242 @@ app.post("/posts/:commentID/deletecomment", (req, res) => {
         res.redirect('/login');
     } else {
         res.sendStatus(400);
+    }
+});
+
+app.get('/get_client', (req, res) => {
+    const {value, error} = schemas.getClients.validate(req.query, VALIDATION_OPTIONS);
+
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    else {
+        const client_name = value.client_name;
+
+        if (client_name == "Show all")
+        {
+
+            try{
+                let clients = client_model.get_all_clients();
+                console.log(clients);
+                res.render('FindClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+        else
+        {
+            try{
+                let clients = client_model.get_client(client_name);
+                console.log(clients);
+                res.render('FindClient', {clients});
+            } catch (err) {
+                console.error(err);
+                return err;
+            }
+        }
+    }
+});
+
+app.get('/get_trainer', (req, res) => {
+    
+    const {value, error} = schemas.getTrainers.validate(req.query, VALIDATION_OPTIONS);
+
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    else{
+        const trainer_name = value.trainer_name;
+        if (trainer_name == "Show all")
+        {
+
+            try{
+                let trainers = trainer_model.get_all_trainers();
+                res.render('FindTrainers', {trainers});
+            } catch (err) {
+                console.error(err);
+                return [];
+            }
+        }
+        else
+        {
+            try{
+
+                let trainers = trainer_model.get_trainer(trainer_name);
+                res.render('FindTrainers', {trainers});
+            } catch (err) {
+                console.error(err);
+                return [];
+            }
+        }
+    }
+});
+
+app.post('/addition/AddTrainer', (req, res) => {
+    console.log("POST /trainers");
+
+    const {value, error} = schemas.addTrainers.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    try {
+        const insert = trainer_model.add_trainer({
+            name: value.name,
+            license: value.license,
+            address: value.address,
+            location: value.location
+        });
+
+        if (insert === true)
+            return res.redirect('/ClientTrackerPages/main');
+    } catch (err) {
+        res.sendStatus(500);
+        console.error(err);
+        return [];
+    }
+});
+
+app.post('/delete_client', (req, res) => {
+    // let name = req.body.delete_client_name;
+    console.log(req.body);
+    const {value, error} = schemas.deleteClients.validate(req.body, VALIDATION_OPTIONS);
+
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    
+    const name = value.name;
+    try {
+        
+        client_model.delete_client(name);
+        return res.redirect('/ClientTrackerPages/main');
+    } catch (err) {
+        res.sendStatus(500);
+        console.error(err);
+        return [];
+    }
+});
+
+app.post('/delete_trainer', (req, res) => {
+    console.log(req.body);
+    const {value, error} = schemas.deleteTrainers.validate(req.body, VALIDATION_OPTIONS);
+
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    const name = value.name;
+
+    try {
+        trainer_model.delete_trainer(name);
+        return res.redirect('/ClientTrackerPages/main');
+    } catch (err) {
+        res.sendStatus(500);
+        console.error(err);
+        return [];
+    }
+});
+
+/*
+ * UPDATE IMPLEMENTATIONS BELOW
+ */
+app.use(express.static(path.join(__dirname, "update")));
+app.post('/update_client', (req, res) => {
+
+    const {value, error} = schemas.updateClients.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    let name = value.name;
+    let is_active = value.is_active.toLowerCase();
+    let height = value.height;
+    let weight = value.weight;
+    let address = value.address;
+    let location = value.location;
+    let diet = value.diet;
+    let plan = value.plan;
+
+    try{
+        if (name){
+            if (is_active){
+                if (is_active == 'yes'){
+                    is_active = 1;
+                } else if (is_active == 'no'){
+                    is_active = 0;
+                }
+
+                client_model.update_is_active(name, is_active);
+            }
+            if (height){
+                client_model.update_height(name, height);
+            }
+            if (weight){
+                client_model.update_weight(name, weight);
+            }
+            if (address){
+                client_model.update_address(name, address);
+            }
+            if (location){
+                client_model.update_location(name, location);
+            }
+            if (diet){
+                client_model.update_diet(name, diet);
+            }
+            if (plan){
+                client_model.update_plan(name, plan);
+            }
+            return res.redirect('/ClientTrackerPages/main.html');
+        }
+    } catch(err) {
+        res.sendStatus(500);
+        console.log(err);
+        return [];
+    }
+});
+
+app.post('/update_trainer', (req, res) => {
+    // let {name, is_active, height, weight, address, location, diet, plan} = req.body;
+
+    const {value, error} = schemas.updateTrainers.validate(req.body, VALIDATION_OPTIONS);
+    if (error) {
+        const errorMessages = error.details.map(error => error.message);
+        console.log(error);
+        return res.sendStatus(400).json(errorMessages);
+    }
+    let name = value.name;
+    let license = value.license;
+    let address = value.address;
+    let location = value.location;
+
+    try{
+        if (name){
+            if (license){
+                trainer_model.update_license(name, license);
+            }
+            if (address){
+                trainer_model.update_address(name, address);
+            }
+            if (location){
+                trainer_model.update_location(name, location);
+            }
+            return res.redirect('/ClientTrackerPages/main.html');
+        }
+    } catch(err) {
+        res.sendStatus(500);
+        console.log(err);
+        return [];
     }
 });
 
