@@ -1,0 +1,13 @@
+<script src="/js/CalCountJS/navbar.js" defer></script>
+
+<a href="/viewpost" id="forum">Forum</a>
+<a href="#trainer">My Trainer</a>
+<a href="/index" id="calorie-counter">Calorie Counter</a>
+<a href= "/meallog" id="meal-log">Meal Log</a>
+<a href= "/tdee" id="calculator">Calculator</a>
+<a href="/login" id="account">Log In/Out</a>
+<% if (typeof isAdmin !== 'undefined'){ %>
+    <% if (isAdmin === 1){ %>
+        <a href="/ClientTrackerPages/main">Admin Side</a>
+    <% } %>
+<% } %> 
