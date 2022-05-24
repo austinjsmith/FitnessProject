@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/viewpost.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts</title>
+</head>
+<body>
+    <nav class="topbar">
+        <%- include ('navbar.ejs') %>
+    </nav>
+    <% if (loggedIn === 1){ %>
+        <br>
+        <div style="text-align: center;">
+            <button id="createbutton"><a href ='/newpost' id="newpost-button">New Post</a></button>
+    
+        </div>
+    <% } %>
+    <% if (loggedIn !== 1){ %>
+        <div id="noAccount" style="text-align: center;">
+            <p>Log in to start posting</p>
+        </div>
+    <% } %>
+    <br>
+    <div class="titles">   
+        <% for (const post of allPosts) { %>
+            <% let route = "posts/" + post.postid; %>
+            <div class="post">
+                <hr id="titlebreak">
+                Topic: <a id="posttitle" href = <%= route %>> <%= post.title %> </a>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

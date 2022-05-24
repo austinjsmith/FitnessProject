@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/meallog.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Log</title>
+</head>
+<body>
+    <nav class="topbar">
+       <%-include ('navbar.ejs') %>
+    </nav>
+    <h3 class="date">TODAY'S DATE: <%= showDate%></h3>
+    <table>
+        <% let total_cal = 0.0 
+            let total_protein = 0.0 
+            let total_carbs = 0.0
+            let total_fats = 0.0 %>
+
+        <tr id="rows">
+            <th>Meal Name</th>
+            <th>Meal Calories</th>
+            <th>Fats</th>
+            <th>Proteins</th>
+            <th>Carbs</th>
+        </tr>
+        <tbody>
+            <% if (meal2.length) { %>
+                <% for (const meal of meal2){ %>   
+                    <tr>
+                        <td><%= meal.mealname %></td>
+                        <td><%= meal.maincalorie %></td>
+                        <td><%= meal.fats %></td>
+                        <td><%= meal.proteins %></td>
+                        <td><%= meal.carbs %></td>
+                        <br>
+                        <% total_cal += meal.maincalorie 
+                            if (typeof meal.proteins === 'number'){
+                                total_protein += meal.proteins 
+                            } 
+                            if (typeof meal.carbs === 'number'){
+                                total_carbs += meal.carbs
+                            }
+                            if (typeof meal.fats === 'number'){
+                                total_fats += meal.fats
+                            } 
+                            else {
+                                total_protein += 0;
+                                total_carbs += 0;
+                                total_fats += 0;
+                            }
+                        %>
+                <% } %>
+            <% } %>
+            <% if (!meal2.length) { %>
+                <br>
+                <center>
+                    <% if (loggedIn !== 1) { %>
+                        <p>Login <a href="login.html" id="nologin">here</a></p>
+                    <% } %>
+                    <% if (loggedIn === 1 ) { %>
+                        <br>
+                        <p>Start adding to your meal log <a href="index" id="nologin">here</a></p>
+                    <% } %>
+                </center>
+            <% } %>    
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total </th>
+                    <th><%= total_cal %></th>
+                    <th><%=total_fats%></th>
+                    <th><%=total_protein%></th>
+                    <th><%=total_carbs%> </th>
+                </tr>
+            </tfoot>
+        </table>
+    <br>
+    <% if (loggedIn === 1 && typeof tdeeW !== 'undefined'){ %>
+        <p id= "cal-left">Calories left: <%= tdeeW.tdee - total_cal%></p>
+    <% } %>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/newpost.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <script src="/js/CalCountJS/newpost.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Post</title>
+</head>
+<body>
+    <nav class="topbar">
+        <%- include ('navbar.ejs') %>
+    </nav>
+        <div class="newpost">
+            <div class="postbody">
+                <form id="postForm" action="/newpost" method="POST">
+                    <h3 id="newpost"> New Post</h3>
+                    <hr>
+                    <div class="formbody">
+                        <!-- <label for="title">Title</label><br> -->
+                        <input type="text" name="title" class="form-title" placeholder="Title">
+                    </div>
+                    <div class="formbody">
+                        <!-- <label for="text">Text</label><br> -->
+                        <br>
+                        <textarea name="postText" class="postText" placeholder="Text"></textarea>
+                    </div>
+                    <div class="addpost">
+                        <br>
+                        <button type="submit" class="createpost">Create Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="errorContainer" class="hidden">
+            <p id="errorMessage">Error</p>
+            <br>
+            <button id="closeError" onclick="show()">Close</button>
+        </div>
+</body>
+</html>

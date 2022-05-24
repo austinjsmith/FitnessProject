@@ -1,0 +1,60 @@
+html {
+    font-family: "Arial", sans-serif;
+    font-size: 30px;
+}
+body {
+    background-color: #f2f2f2;
+    margin: 0 auto;
+}
+
+
+.titles{
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 100px;
+}
+
+.post{
+    /* border: 1px solid #111 ;
+    border-radius: 2px; */
+    height: 100px;
+    line-height: 36px;
+}
+
+
+button {
+    border: none;
+    background-color: #cf5f5f; 
+    color: #f0f0f0;
+    padding: 15px 32px;
+    text-align: center;
+    font-size: 16px;
+}
+
+#noAccount {
+    color: white;
+    background-color: #cf5f5f;
+    margin: 0 auto;
+    width: 300px;
+    height: 40px;
+    /* box-shadow: 1px 1px 5px 3px #999999; */
+}
+
+#newpost-button{
+    text-align: none;
+    color: white;
+    text-decoration: none;
+}
+
+#posttitle{
+    text-decoration: none;
+    color: #cf5f5f;
+    text-align: center;
+}
+
+#titlebreak{
+    display: flex;
+    align-items: center;
+    text-align: center;
+}

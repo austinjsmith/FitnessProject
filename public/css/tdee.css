@@ -1,0 +1,59 @@
+html {
+    font-family: "Arial", sans-serif;
+    font-size: 30px;
+}
+body {
+    background-color: #f2f2f2;
+    margin: auto;
+    padding:  0 0px 0px 0px;
+    border-top: 10px;
+    border: 5px black;
+}
+
+#weight, #age{
+    padding: 8px 8px;
+    border: solid 1px #333;
+    /* box-shadow: 1px 3px 5px 3px #999999; */
+}
+button {
+    border: none;
+    background-color: #cf5f5f; 
+    color: #f0f0f0;
+    padding: 15px 32px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  #tdeeForm{
+    max-width: 700px;
+    margin: auto;
+  }
+
+  select{
+      background-color: #cf5f5f;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align:center;
+      font-size: 12px;
+  }
+
+  #cal-calories{
+      background-color: #cf5f5f;
+      color: white;
+      font-size: 25px;
+      padding: 10px;
+      text-align: center;
+  }
+
+.loginhere{
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+#add{
+    text-align: center;
+}

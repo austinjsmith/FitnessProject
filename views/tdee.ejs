@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/tdee.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <script src="/js/CalCountJS/tdee.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDEE Calculator</title>
+</head>
+<body>
+    <nav class="topbar">
+       <%- include ('navbar.ejs') %>
+    </nav>
+    
+    <form id="tdeeForm" action="/counter" method="POST">
+        <p id="cal-calories">
+            Daily Caloric Intake :
+            <% if (loggedIn !== 1) { %>
+                <span>Login <a href="login.html" class = "loginhere">Here</a></span>
+            <% } %>
+            <% if (typeof t === 'undefined' && loggedIn === 1) { %>
+                <span id="add">Calculate Your Calories Below</span>
+            <% } %>
+            <% if (loggedIn === 1 && typeof t !== 'undefined') { %>
+                <%= t.tdee %>
+            <% } %>
+
+        </p>
+        <p id="description">Your TDEE is your total daily energy expenditure. This is the amount of calories you 
+            burn each day. <br><br> This is calculated using the  Mifflin-St Jeor formula.<br><br> If you want to gain weight, 
+            you have to eat over your TDEE. To lose weight, you eat under this number. Find out how many
+            calories you need to consume below!
+        </p>
+        <hr>
+        <div>
+            <label for="weight">Enter Your Weight</label>
+            <br>
+            <input id="weight" name="weight" placeholder="Weight in Pounds" required>
+        </div>
+        <br>
+        <div>
+            <label for="age">Enter Your Age</label>
+            <br>
+            <input id="age" name="age" placeholder="Age" required>
+        </div>
+        <br>
+        <div>
+            <label for="gender"> Select Your Gender</label>
+            <br>
+            <select name ="gender" id="gender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+            </select>
+        </div>
+        <br>
+        <div class="heightselect">
+            <label for="height">Select Your Height</label>
+            <br>
+            <select name = "height" id="height" id="height">
+                <option value="58">4'10"</option>
+                <option value="59">4'11"</option>
+                <option value="60">5'0"</option>
+                <option value="61">5'1"</option>
+                <option value="62">5'2"</option>
+                <option value="63">5'3"</option>
+                <option value="64">5'4"</option>
+                <option value="65">5'5"</option>
+                <option value="66">5'6"</option>
+                <option value="67">5'7"</option>
+                <option value="68">5'8"</option>
+                <option value="69">5'9"</option>
+                <option value="70">5'10"</option>
+                <option value="71">5'11"</option>
+                <option value="72">6'0"</option>
+                <option value="73">6'1"</option>
+                <option value="74">6'2"</option>
+                <option value="75">6'3"</option>
+                <option value="76">6'4"</option>
+                <option value="77">6'5"</option>
+                <option value="78">6'6"</option>
+                <option value="79">6'7"</option>
+                <option value="80">6'8"</option>
+            </select>
+        </div>
+        
+        <!-- <div class = "selector" class="hidelean" id="leanselect">
+            <select name = "select" id ="lean" class="male">
+                <option value="1">7% - 14%</option>
+                <option value=".95">15% - 20%</option>
+                <option value=".9">21% - 28%</option>
+                <option value=".85">Over 28%</option>
+            </select>
+            <select name="select" id="lean" class="female">
+                <option value="1">14% - 18%</option>
+                <option value=".95">19% - 28%</option>
+                <option value=".9">29% - 38%</option>
+                <option value=".85">Over 38%</option>
+            </select> -->
+        <div class="acvititylevel">
+            <br>
+            <label for="activity">Select Your Activity</label>
+            <br>
+  
+            <select name="activity" id="activity">
+                <option value="1.3">Very Light ( Little Walking, Sitting, Studying, etc )</option>
+                <option value="1.55"> Light ( Some Walking, Standing, etc )</option>
+                <option value="1.65">Moderate ( Working out 2 hours/day )</option>
+                <option value="1.80">Heavy ( Athlete, Working out 4 hours/day )</option>
+                <option value="2.00">Very Heavy ( Moderate to Hard activity 8 hours/day )</option>
+            </select>
+        </div>
+        <div>
+            <br>
+            <label for="goal">Select Your Goal</label>
+            <br>
+            <select name="goal" id="goal">
+                <option value="0">Maintaince</option>
+                <option value="1">Gain Weight</option>
+                <option value="2">Lose Weight</option>
+            </select>
+        </div>
+        <hr>
+        <div id="add">
+            <button id="add-tdee">Calculate</button>
+        </div>
+        
+    </form>
+    <div style="text-align: center;">
+        <div id="errorContainer" class="hidden message message-error">
+            <p id="errorMessage">Error</p>
+            <br>
+            <button id="closeError" onclick="show()">X</button>
+        </div>
+    </div>
+</body>
+</html>

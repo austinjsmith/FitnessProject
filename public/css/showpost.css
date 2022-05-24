@@ -1,0 +1,73 @@
+html {
+    font-family: "Arial", sans-serif;
+    font-size: 30px;
+}
+body {
+    background-color: #f2f2f2;
+    margin: 0 auto;
+    padding:  0 0px 0px 0px;
+    border: 5px black;
+} 
+
+.postdata{
+    width: 50%;
+}
+
+h4{
+    color: #cf5f5f;
+}
+
+button {
+    border: none;
+    background-color: #cf5f5f; 
+    color: #f0f0f0;
+    padding: 15px 32px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.oneComment{
+    width: 300px;
+}
+
+#date{
+    font-size: 16px;
+    color: #4f4f4f;
+}
+
+#line1{
+    font-size: 26px;
+    
+}
+
+.postdata{
+    padding-left: 15px;
+}
+
+#commentinput{
+    height: 30px;
+    width: 300px;
+}
+
+#username{
+    color: #4f4f4f;
+    font-size: 14px;
+}
+
+#postText{
+    line-height: 0px;
+}
+
+#trashcan{
+    filter: invert(43%) sepia(0%) saturate(0%) hue-rotate(208deg) brightness(94%) contrast(82%);
+    width:50px;
+    height: 50px;
+}
+
+#trashcan:hover{
+    filter: invert(0%) sepia(0%) saturate(1000%) hue-rotate(131deg) brightness(0%) contrast(87%);
+}
+
+.hidden{
+    display: none;
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/login.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="viewpost">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="login.html" class="active">Log In</a>
+        <a href="logout.html">Log Out</a>
+    </nav>
+
+    <div class='content'>
+        <center> 
+            <img src="weights.png" id="weight-logo"/> 
+            <h1 id="name">FITNESS <br> <span id="team"> TEAM </span></h1>
+            <p id="description">Login or create an account!</p>
+            <form id="loginForm" action="/login" method="POST">
+                <div class="email">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="password">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <br>
+                <button> Login </button>
+                <p>or<a href="register.html" id="reg"> register</a></p>
+            </form>
+
+        </center>
+    </div>
+</body>
+</html>

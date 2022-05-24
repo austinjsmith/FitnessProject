@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="js/addmeal.js" defer></script>
+    <link rel="stylesheet" href="/css/caloriecount.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=\, initial-scale=1.0">
+    <title>Calorie Calculator</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="viewpost">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="index.html" class="active">Calorie Counter</a>
+        <a href= "meallog">Meal Log</a>
+        <a href= "tdee">Calculator</a>
+        <a href="login.html">Log In</a>
+    </nav>
+        <div>
+            <br>
+            <h3>Meal Calories</h3>
+            <p id="meal-description">
+                Insert your calculated calories for your meal! <br>
+                Be sure to read your nutrition labels for calories and macros.
+            </p>
+        </div>
+            <form id="mealForm" action="/calories" method="POST">
+                <div>
+                    <label for="mealname">Meal Name:</label>
+                    <br>
+                    <input id="mealname" name ="mealname" required> 
+                </div>
+                <div>
+                    <label for="maincalorie">Calories:</label>
+            
+                    <br>
+                    <input id="maincalorie" name="maincalorie" required>
+                    <br>
+                </div>
+                <hr>
+                <h3>Macros</h3>
+                <div>
+                    <label for="proteins">Protein (enter in grams): </label>
+                    <br>
+                    <input id="proteins" name="proteins">
+                    <br>
+                </div>
+                <div>
+                    <label for="carbs">Carbs (enter in grams): </label>
+                    <br>
+                    <input id="carbs" name="carbs">
+                </div>
+                <div>
+                    <label for="fats">Fats (enter in grams): </label>
+                    <br>
+                    <input id="fats" name="fats">
+                </div>
+                <hr>
+                <button type="submit">Add Meal</button>
+            </form>
+            <br>
+            <center>
+                <div id="errorContainer" class="hidden">
+                    <p id="errorMessage">Error</p>
+                    <br>
+                    <button id="closeError" onclick="show()">Close</button>
+                </div>
+            </center>
+            
+</body>
+</html>

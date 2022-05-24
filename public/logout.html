@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/logout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged Out</title>
+</head>
+<body>
+    <nav class="topbar">
+        <a href="/viewpost">Forum</a>
+        <a href="#trainer">My Trainer</a>
+        <a href="/index">Calorie Counter</a>
+        <a href= "/meallog">Meal Log</a>
+        <a href= "/tdee">Calculator</a>
+        <a href="/logout.html" class="active">Log Out</a>
+    </nav>
+
+    <div class="content">
+        <form id="logoutForm" action="/logout" method="POST">
+            <div style="text-align: center;">
+                <p>Are you sure you want to log out?</p>
+                <button name="logout">Yes</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

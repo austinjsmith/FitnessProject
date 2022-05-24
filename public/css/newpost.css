@@ -1,0 +1,63 @@
+html {
+    font-family: "Arial", sans-serif;
+    font-size: 30px;
+}
+body {
+    background-color: #f2f2f2;
+    margin: 0 auto;
+}
+
+h3 {
+    color: #cf5f5f;
+}
+
+.form-title{
+    width: 300px;
+}
+
+textarea{
+    width: 400px;
+    height: 100px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+label{
+    font-size: 24px;
+}
+
+.createpost{
+    border: none;
+    background-color: #cf5f5f; 
+    color: #f0f0f0;
+    padding: 15px 32px;
+    text-align: center;
+    font-size: 16px;
+}
+.newpost{
+    padding-left: 15px;
+    width: 50%;
+}
+
+.hidden{
+    display: none;
+}
+
+#closeError{
+    background-color: #cf5f5f; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+#errorContainer{
+    padding-left: 15px;
+    color: #cf5f5f; 
+}
+
+input{
+    height: 25px;
+}

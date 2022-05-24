@@ -1,0 +1,24 @@
+/* ONLINE_BLOCK https://www.w3schools.com/howto/howto_js_topnav.asp */
+.topbar{
+    background-color: #333;
+    overflow: hidden;
+}
+
+.topbar a{
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 18px;
+    border-bottom: 2px solid #333;
+}
+/* END_ONLINE_BLOCK */
+
+.topbar a:hover{
+    border-bottom: 3px solid #cf5f5f;
+} 
+
+.topbar .active{
+    border-bottom: 3px solid #cf5f5f;
+}
